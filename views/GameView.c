@@ -18,13 +18,41 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
+#include "List.h"
+#include "Queue.h"
 // add your own #includes here
+#define PREMATURE_VAMPIRE 0
+#define REGULAR_TRAP	  1
 
 // TODO: ADD YOUR OWN STRUCTS HERE
+typedef struct hunter {
+	int id;
+	int health;
+	Place place;
+} Hunter;
+
+typedef struct dracula {
+	int id;
+	int health;
+	Place place;
+} Dracula;
+
 
 struct gameView {
-	// TODO: ADD FIELDS HERE
-};
+	char *pastPlays;
+	Message message;
+	Map map;
+	int score;
+	int turn;
+	Round round;
+	Trail trail;
+	TrapList traps;
+	Hunter Lord_Godalming;
+	Hunter Dr_Seward;
+	Hunter Van_Helsing;
+	Hunter Mina_Harker;
+	Dracula Dracula;
+} ;
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor

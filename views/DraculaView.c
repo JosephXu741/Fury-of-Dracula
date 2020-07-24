@@ -18,25 +18,95 @@
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
+#include "Places.h"
+#include "List.h"
+#include "Queue.h"
 // add your own #includes here
+#define PREMATURE_VAMPIRE 0
+#define REGULAR_TRAP	  1
 
 // TODO: ADD YOUR OWN STRUCTS HERE
+typedef struct hunter {
+	int id;
+	int health;
+	Place place;
+} Hunter;
+
+typedef struct dracula {
+	int id;
+	int health;
+	Place place;
+} Dracula;
+
 
 struct draculaView {
-	// TODO: ADD FIELDS HERE
-};
+	char *pastPlays;
+	Message *message;
+	Map map;
+	int score;
+	int turn;
+	Round round;
+	Trail trail;
+	TrapList traps;
+	Hunter Lord_Godalming;
+	Hunter Dr_Seward;
+	Hunter Van_Helsing;
+	Hunter Mina_Harker;
+	Dracula Dracula;
+} ;
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
 DraculaView DvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	DraculaView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate DraculaView\n");
 		exit(EXIT_FAILURE);
 	}
+	Place hunterStart;
+	hunterStart.id = HOSPITAL_PLACE;
+	hunterStart.name = placeIdToName(hunterStart.id);
+	hunterStart.abbrev = placeIdToAbbrev(hunterStart.id);
+
+	Place draculaStart;
+	draculaStart.id = CASTLE_DRACULA;
+	draculaStart.name = placeIdToName(draculaStart.id);
+	draculaStart.abbrev = placeIdToAbbrev(draculaStart.id);
+	draculaStart.type = LAND;
+
+	Message *mg = messages;
+
+	new->pastPlays = pastPlays;
+	new->message = mg;
+	new->map = MapNew();
+	new->score = GAME_START_SCORE;
+	new->turn = 1;
+	new->round = 1;
+	new->trail = NewTrail();
+	new->traps = NewTrapList();
+
+	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
+	new->Lord_Godalming.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Lord_Godalming.place = hunterStart;
+
+	new->Dr_Seward.id = PLAYER_DR_SEWARD;
+	new->Dr_Seward.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Dr_Seward.place = hunterStart;
+
+	new->Van_Helsing.id = PLAYER_VAN_HELSING;
+	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Van_Helsing.place = hunterStart;
+
+	new->Mina_Harker.id = PLAYER_MINA_HARKER;
+	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Mina_Harker.place = hunterStart;
+
+	new->Dracula.id = PLAYER_DRACULA;
+	new->Dracula.health = GAME_START_BLOOD_POINTS;
+	new->Dracula.place = draculaStart;
+	
 
 	return new;
 }
@@ -52,8 +122,7 @@ void DvFree(DraculaView dv)
 
 Round DvGetRound(DraculaView dv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return dv->round;
 }
 
 int DvGetScore(DraculaView dv)

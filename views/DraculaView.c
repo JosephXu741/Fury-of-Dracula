@@ -19,8 +19,8 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "List.h"
 #include "Queue.h"
+#include "List.h"
 // add your own #includes here
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
@@ -29,25 +29,22 @@
 typedef struct hunter {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
 } Hunter;
 
 typedef struct dracula {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
 } Dracula;
 
 
 struct draculaView {
-	char *pastPlays;
-	Message *message;
 	Map map;
 	int score;
-	int turn;
 	Round round;
-	Trail trail;
 	TrapList traps;
+	Trail trail;
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
 	Hunter Van_Helsing;
@@ -65,47 +62,34 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate DraculaView\n");
 		exit(EXIT_FAILURE);
 	}
-	Place hunterStart;
-	hunterStart.id = HOSPITAL_PLACE;
-	hunterStart.name = placeIdToName(hunterStart.id);
-	hunterStart.abbrev = placeIdToAbbrev(hunterStart.id);
-
-	Place draculaStart;
-	draculaStart.id = CASTLE_DRACULA;
-	draculaStart.name = placeIdToName(draculaStart.id);
-	draculaStart.abbrev = placeIdToAbbrev(draculaStart.id);
-	draculaStart.type = LAND;
-
-	Message *mg = messages;
-
-	new->pastPlays = pastPlays;
-	new->message = mg;
+	GameView gv = GvNew(pastPlays, messages);
+	new->round = GvGetRound(gv);
+	new->score = GvGetScore(gv);
 	new->map = MapNew();
-	new->score = GAME_START_SCORE;
-	new->turn = 1;
-	new->round = 1;
-	new->trail = NewTrail();
-	new->traps = NewTrapList();
 
 	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
-	new->Lord_Godalming.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Lord_Godalming.place = hunterStart;
+	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
 
 	new->Dr_Seward.id = PLAYER_DR_SEWARD;
-	new->Dr_Seward.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Dr_Seward.place = hunterStart;
+    new->Dr_Seward.health = GvGetHealth(gv, PLAYER_DR_SEWARD);
+    new->Dr_Seward.place = GvGetPlayerLocation(gv, PLAYER_DR_SEWARD);
 
-	new->Van_Helsing.id = PLAYER_VAN_HELSING;
-	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Van_Helsing.place = hunterStart;
+    new->Van_Helsing.id = PLAYER_VAN_HELSING;
+    new->Van_Helsing.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Van_Helsing.place = GvGetPlayerLocation(gv, PLAYER_VAN_HELSING);
 
-	new->Mina_Harker.id = PLAYER_MINA_HARKER;
-	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Mina_Harker.place = hunterStart;
+    new->Mina_Harker.id = PLAYER_MINA_HARKER;
+    new->Mina_Harker.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Mina_Harker.place = GvGetPlayerLocation(gv, PLAYER_MINA_HARKER);
 
-	new->Dracula.id = PLAYER_DRACULA;
-	new->Dracula.health = GAME_START_BLOOD_POINTS;
-	new->Dracula.place = draculaStart;
+    new->Dracula.id = PLAYER_DRACULA;
+    new->Dracula.health =  GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
+
+	new->traps = newList();
+	
+	new->trail = newQueue();
 	
 
 	return new;
@@ -133,8 +117,19 @@ int DvGetScore(DraculaView dv)
 
 int DvGetHealth(DraculaView dv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	int health = 0;
+
+	if (dv->Lord_Godalming.id == player) {
+		health = dv->Lord_Godalming.health;
+	} else if (dv->Dr_Seward.id == player) {
+		health = dv->Dr_Seward.health;
+	} else if (dv->Van_Helsing.id == player) {
+		health = dv->Van_Helsing.health;
+	} else if (dv->Mina_Harker.id == player) {
+		health = dv->Mina_Harker.health;
+	} 
+
+	return health;
 }
 
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
@@ -145,7 +140,7 @@ PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 
 PlaceId DvGetVampireLocation(DraculaView dv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	
 	return NOWHERE;
 }
 

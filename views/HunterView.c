@@ -19,12 +19,46 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
+
 // add your own #includes here
+#include "List.h"
+#include "Queue.h"
+
+#define PREMATURE_VAMPIRE 0
+#define REGULAR_TRAP	  1
+
 
 // TODO: ADD YOUR OWN STRUCTS HERE
+typedef struct hunter {
+	int id;
+	int health;
+	Place place;
+	PlaceId *moveHistory;
+} Hunter;
+
+typedef struct dracula {
+	int id;
+	int health;
+	Place place;
+	PlaceId *moveHistory;
+} Dracula;
+
+
 
 struct hunterView {
 	// TODO: ADD FIELDS HERE
+	GameView gv;
+	Map map;
+	int score;
+	Round round;
+	Hunter Lord_Godalming;
+	Hunter Dr_Seward;
+	Hunter Van_Helsing;
+	Hunter Mina_Harker;
+	Dracula Dracula;
+	int *numReturnedMoves;
+
+
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -38,6 +72,38 @@ HunterView HvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate HunterView!\n");
 		exit(EXIT_FAILURE);
 	}
+
+	new->gv = GvNew(pastPlays, messages);
+	new->map = MapNew();
+	new->score = GvGetScore(gv);
+	new->round = GvGetRound(gv);
+
+	new->numReturnedMoves = 0;
+
+
+	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
+	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.placeID = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, new->numReturnedMoves, false);
+
+	new->Dr_Seward.id = PLAYER_DR_SEWARD;
+    new->Dr_Seward.health = GvGetHealth(gv, PLAYER_DR_SEWARD);
+    new->Dr_Seward.place = GvGetPlayerLocation(gv, PLAYER_DR_SEWARD);
+	new->Dr_Seward.placeID = GvGetMoveHistory(gv, PLAYER_DR_SEWARD, new->numReturnedMoves, false);
+
+    new->Van_Helsing.id = PLAYER_VAN_HELSING;
+    new->Van_Helsing.health = GvGetHealth(gv, PLAYER_VAN_HELSING);
+    new->Van_Helsing.place = GvGetPlayerLocation(gv, PLAYER_VAN_HELSING);
+	new->Van_Helsing.placeID = GvGetMoveHistory(gv, PLAYER_VAN_HELSING, new->numReturnedMoves, false);
+
+    new->Mina_Harker.id = PLAYER_MINA_HARKER;
+    new->Mina_Harker.health = GvGetHealth(gv, PLAYER_MINA_HARKER);
+    new->Mina_Harker.place = GvGetPlayerLocation(gv, PLAYER_MINA_HARKER);
+	new->Mina_Harker.placeID = GvGetMoveHistory(gv, PLAYER_MINA_HARKER, new->numReturnedMoves, false);
+
+    new->Dracula.id = PLAYER_DRACULA;
+    new->Dracula.health =  GvGetHealth(gv, PLAYER_DRACULA);
+    new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
 
 	return new;
 }
@@ -53,38 +119,33 @@ void HvFree(HunterView hv)
 
 Round HvGetRound(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetRound(hv->gv);
 }
 
 Player HvGetPlayer(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return PLAYER_LORD_GODALMING;
+	// TODO implment GvGetPlayer in gv
+	return GvGetPlayer(hv->gv);
 }
 
 int HvGetScore(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetScore(gv->gv);
 }
 
 int HvGetHealth(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return GvGetHealth(hv->gv, player);
 }
 
 PlaceId HvGetPlayerLocation(HunterView hv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return GvGetPlayerLocation(hv->gv, player);
 }
 
 PlaceId HvGetVampireLocation(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return GvGetVampireLocation(hv->gv);
 }
 
 ////////////////////////////////////////////////////////////////////////

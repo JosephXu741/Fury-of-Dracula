@@ -13,14 +13,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "DraculaView.h"
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "List.h"
 #include "Queue.h"
+#include "List.h"
 // add your own #includes here
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
@@ -29,30 +30,31 @@
 typedef struct hunter {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
+	PlaceId *moveHistory;
 } Hunter;
 
 typedef struct dracula {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
+	PlaceId *moveHistory;
 } Dracula;
 
 
 struct draculaView {
-	char *pastPlays;
-	Message *message;
 	Map map;
 	int score;
-	int turn;
 	Round round;
-	Trail trail;
-	TrapList traps;
+	PlaceId vampLoc;
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
+	PlaceId *trapLocations;
+	int *numReturnedMoves;
+	int *numTraps;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -65,49 +67,65 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate DraculaView\n");
 		exit(EXIT_FAILURE);
 	}
-	Place hunterStart;
-	hunterStart.id = HOSPITAL_PLACE;
-	hunterStart.name = placeIdToName(hunterStart.id);
-	hunterStart.abbrev = placeIdToAbbrev(hunterStart.id);
-
-	Place draculaStart;
-	draculaStart.id = CASTLE_DRACULA;
-	draculaStart.name = placeIdToName(draculaStart.id);
-	draculaStart.abbrev = placeIdToAbbrev(draculaStart.id);
-	draculaStart.type = LAND;
-
-	Message *mg = messages;
-
-	new->pastPlays = pastPlays;
-	new->message = mg;
+	GameView gv = GvNew(pastPlays, messages);
+	new->round = GvGetRound(gv);
+	new->score = GvGetScore(gv);
 	new->map = MapNew();
-	new->score = GAME_START_SCORE;
-	new->turn = 1;
-	new->round = 1;
-	new->trail = NewTrail();
-	new->traps = NewTrapList();
+
+	new->numReturnedMoves = 0;
 
 	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
-	new->Lord_Godalming.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Lord_Godalming.place = hunterStart;
+	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.place = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, new->numReturnedMoves, false);
+
 
 	new->Dr_Seward.id = PLAYER_DR_SEWARD;
-	new->Dr_Seward.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Dr_Seward.place = hunterStart;
+    new->Dr_Seward.health = GvGetHealth(gv, PLAYER_DR_SEWARD);
+    new->Dr_Seward.place = GvGetPlayerLocation(gv, PLAYER_DR_SEWARD);
 
-	new->Van_Helsing.id = PLAYER_VAN_HELSING;
-	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Van_Helsing.place = hunterStart;
+    new->Van_Helsing.id = PLAYER_VAN_HELSING;
+    new->Van_Helsing.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Van_Helsing.place = GvGetPlayerLocation(gv, PLAYER_VAN_HELSING);
 
-	new->Mina_Harker.id = PLAYER_MINA_HARKER;
-	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
-	new->Mina_Harker.place = hunterStart;
+    new->Mina_Harker.id = PLAYER_MINA_HARKER;
+    new->Mina_Harker.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Mina_Harker.place = GvGetPlayerLocation(gv, PLAYER_MINA_HARKER);
 
-	new->Dracula.id = PLAYER_DRACULA;
-	new->Dracula.health = GAME_START_BLOOD_POINTS;
-	new->Dracula.place = draculaStart;
-	
+    new->Dracula.id = PLAYER_DRACULA;
+    new->Dracula.health =  GvGetHealth(gv, PLAYER_LORD_GODALMING);
+    new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
 
+	new->numTraps = 0;
+
+
+	new->vampLoc = GvGetVampireLocation(gv);
+	new->trapLocations = GvGetTrapLocations(gv, new->numTraps);
+	// char s[10000];
+	// strcpy(s, pastPlays);
+	// char *token = strtok(s, " ");
+	// while (token != NULL){
+	// 	int cmp = strncmp(token, "D", 1);
+	// 	if (cmp == 0){
+	// 		char abbv[3];
+	// 		abbv[0] = token[1];
+	// 		abbv[1] = token[2];
+	// 		abbv[2] = '\0';
+	// 		PlaceId placeid = placeAbbrevToId(abbv); 
+	// 		QueueJoin(new->trail, placeid);
+	// 		ListInsert(new->traps, trap);
+
+	// 	} else {
+	// 		char abbv[3];
+	// 		abbv[0] = token[1];
+	// 		abbv[1] = token[2];
+	// 		abbv[2] = '\0';
+	// 		PlaceId placeid = placeAbbrevToId(abbv); 
+
+	// 	}
+
+	// 	token = strtok(NULL, " ");
+	// }
 	return new;
 }
 
@@ -133,20 +151,45 @@ int DvGetScore(DraculaView dv)
 
 int DvGetHealth(DraculaView dv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	int health = 0;
+
+	if (dv->Lord_Godalming.id == player) {
+		health = dv->Lord_Godalming.health;
+	} else if (dv->Dr_Seward.id == player) {
+		health = dv->Dr_Seward.health;
+	} else if (dv->Van_Helsing.id == player) {
+		health = dv->Van_Helsing.health;
+	} else if (dv->Mina_Harker.id == player) {
+		health = dv->Mina_Harker.health;
+	} 
+
+	return health;
 }
 
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	assert(dv->round >= 1);
+	if (dv->round == 1) {
+		if (player == dv->Lord_Godalming.id /*&& location is HOSPITAL*/) return NOWHERE;			
+		if (player == dv->Dr_Seward.id /*&& location is HOSPITAL*/) return NOWHERE;		
+		if (player == dv->Van_Helsing.id /*&& location is HOSPITAL*/) return NOWHERE;		
+		if (player == dv->Mina_Harker.id /*&& location is HOSPITAL*/) return NOWHERE;	
+	    if (player == dv->Dracula.id /*&& location is CASTLE/*/) return NOWHERE;	
+	}	
+	printf("The location of player is at location\n");
+	PlaceId location = NOWHERE;	
+		
+	
+	
+	return location;
 }
+
 
 PlaceId DvGetVampireLocation(DraculaView dv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	
+	return dv->vampLoc;
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
@@ -161,9 +204,12 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedMoves = 0;
-	return NULL;
+	if (dv->round == 0){
+		*numReturnedMoves = 0;
+		return NULL;
+	}
+
+
 }
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)

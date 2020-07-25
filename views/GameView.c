@@ -39,7 +39,6 @@ typedef struct dracula {
 
 
 struct gameView {
-	char *pastPlays;
 	Message message;
 	Map map;
 	int score;
@@ -52,6 +51,7 @@ struct gameView {
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
+	int *numTraps;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -59,12 +59,12 @@ struct gameView {
 
 GameView GvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	GameView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
+
 
 	return new;
 }

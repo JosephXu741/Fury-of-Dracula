@@ -252,8 +252,7 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               bool boat, int *numReturnedLocs);
 
 ////////////////////////////////////////////////////////////////////////
-// Your own interface functions
 
-// TODO
+
 
 #endif // !defined (FOD__GAME_VIEW_H_)

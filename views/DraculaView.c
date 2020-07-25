@@ -164,8 +164,22 @@ int DvGetHealth(DraculaView dv, Player player)
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	assert(dv->round >= 1);
+	if (dv->round == 1) {
+		if (player == dv->Lord_Godalming.id /*&& location is HOSPITAL*/) return NOWHERE;			
+		if (player == dv->Dr_Seward.id /*&& location is HOSPITAL*/) return NOWHERE;		
+		if (player == dv->Van_Helsing.id /*&& location is HOSPITAL*/) return NOWHERE;		
+		if (player == dv->Mina_Harker.id /*&& location is HOSPITAL*/) return NOWHERE;	
+	    if (player == dv->Dracula.id /*&& location is CASTLE/*/) return NOWHERE;	
+	}	
+	printf("The location of player is at location\n");
+	PlaceId location = NOWHERE;	
+		
+	
+	
+	return location;
 }
+
 
 PlaceId DvGetVampireLocation(DraculaView dv)
 {

@@ -5,7 +5,9 @@
 #include "Trap.h"
 
 typedef struct ListNode {
-	Trap value;
+	PlaceId location;
+	trapType trap;
+
 	struct ListNode *next;
 } ListNode;
 
@@ -19,7 +21,7 @@ typedef struct ListRep {
 #define key(a)  ItemKey(a)
 
 // create new empty list
-List newList()
+List newTrapList()
 {
 	List L;
 	L = malloc(sizeof(ListRep));
@@ -30,13 +32,13 @@ List newList()
 }
 
 // free memory used by list
-void dropList(List L)
+void dropTrapList(List L)
 {
 	assert(L != NULL);
 	ListNode *next;
 	while (L->first != NULL) {
 		next = L->first->next;
-		ItemDrop(L->first->value);
+		ItemDrop(L->first->location);
 		free(L->first);
 		L->first = next;
 	}
@@ -44,13 +46,13 @@ void dropList(List L)
 }
 
 // display as [1,2,3,4...]
-void showList(List L)
+void showTrapList(List L)
 {
 	assert(L != NULL);
 	ListNode *curr = L->first;
 	printf("[");
 	while (curr != NULL) {
-		ItemShow(curr->value);
+		ItemShow(curr->location);
 		if (curr->next != NULL)
 			printf(",");
 		curr = curr->next;
@@ -60,22 +62,22 @@ void showList(List L)
 
 // add item into list
 // no check for duplicates
-void ListInsert(List L, Item it)
+void TrapListInsert(List L, Item it)
 {
 	assert(L != NULL);
 	ListNode *prev, *curr;
 	prev = NULL; curr = L->first;
 	while (curr != NULL) {
-		if (eq(key(it),key(curr->value)))
+		if (eq(key(it),key(curr->location)))
 			return; // already in list
-		if (gt(key(curr->value),key(it)))
+		if (gt(key(curr->location),key(it)))
             break;
 		prev = curr;
 		curr = curr->next;
 	}
 	ListNode *new = malloc(sizeof(ListNode));
 	assert(new != NULL);
-	new->value = ItemCopy(it);
+	new->location = ItemCopy(it);
 	new->next = NULL;
 	if (L->last == NULL)
 		L->first = L->last = new;
@@ -97,13 +99,13 @@ void ListInsert(List L, Item it)
 
 // remove item(s)
 // assumes no duplicates
-void ListDelete(List L, Key k)
+void TrapListDelete(List L, Key k)
 {
 	assert(L != NULL);
 	ListNode *prev, *curr;
 	prev = NULL; curr = L->first;
 	while (curr != NULL) {
-		if (eq(k,key(curr->value)))
+		if (eq(k,key(curr->location)))
 			break;
 		prev = curr;
 		curr = curr->next;
@@ -124,13 +126,13 @@ void ListDelete(List L, Key k)
 }
 
 // return item with key
-Item *ListSearch(List L, Key k)
+Item *TrapListSearch(List L, Key k)
 {
 	assert(L != NULL);
 	ListNode *curr = L->first;
 	while (curr != NULL) {
-		if (eq(k,key(curr->value)))
-			return &(curr->value);
+		if (eq(k,key(curr->location)))
+			return &(curr->location);
 		else
 			curr = curr->next;
 	}
@@ -138,7 +140,7 @@ Item *ListSearch(List L, Key k)
 }
 
 // # items in list
-int ListLength(List L)
+int TrapListLength(List L)
 {
 	int n = 0;
 	ListNode *curr = L->first; 

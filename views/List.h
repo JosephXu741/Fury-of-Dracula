@@ -6,14 +6,15 @@
 
 typedef struct ListRep *List;
 typedef List TrapList;
+typedef int trapType; 
 
 
-List newList(); // create new empty lis
-void dropList(List); // free memory used by list
-void showList(List); // display as [1,2,3...]
-void ListInsert(List,Item); // add item into list
-void ListDelete(List,Key); // remove item
-Item *ListSearch(List,Key); // return item with key
-int  ListLength(List); // # items in list
+List newTrapList(); // create new empty lis
+void dropTrapList(List); // free memory used by list
+void showTrapList(List); // display as [1,2,3...]
+void TrapListInsert(List,Item); // add item into list
+void TrapListDelete(List,Key); // remove item
+Item *TrapListSearch(List,Key); // return item with key
+int  TrapListLength(List); // # items in list
 
 #endif

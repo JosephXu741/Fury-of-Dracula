@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "DraculaView.h"
 #include "Game.h"
@@ -30,12 +31,14 @@ typedef struct hunter {
 	int id;
 	int health;
 	PlaceId place;
+	PlaceId *moveHistory;
 } Hunter;
 
 typedef struct dracula {
 	int id;
 	int health;
 	PlaceId place;
+	PlaceId *moveHistory;
 } Dracula;
 
 
@@ -43,13 +46,14 @@ struct draculaView {
 	Map map;
 	int score;
 	Round round;
-	TrapList traps;
-	Trail trail;
+	PlaceId vampLoc;
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
+	PlaceId *trapLocations;
+	int *numReturnedMoves;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -70,6 +74,8 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
 	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
 	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
+	new->Lord_Godalming.place = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, , false);
+
 
 	new->Dr_Seward.id = PLAYER_DR_SEWARD;
     new->Dr_Seward.health = GvGetHealth(gv, PLAYER_DR_SEWARD);
@@ -87,11 +93,34 @@ DraculaView DvNew(char *pastPlays, Message messages[])
     new->Dracula.health =  GvGetHealth(gv, PLAYER_LORD_GODALMING);
     new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
 
-	new->traps = newList();
-	
-	new->trail = newQueue();
-	
 
+	new->vampLoc = GvGetVampireLocation(gv);
+	new->trapLocations = GvGetTrapLocations(gv);
+	// char s[10000];
+	// strcpy(s, pastPlays);
+	// char *token = strtok(s, " ");
+	// while (token != NULL){
+	// 	int cmp = strncmp(token, "D", 1);
+	// 	if (cmp == 0){
+	// 		char abbv[3];
+	// 		abbv[0] = token[1];
+	// 		abbv[1] = token[2];
+	// 		abbv[2] = '\0';
+	// 		PlaceId placeid = placeAbbrevToId(abbv); 
+	// 		QueueJoin(new->trail, placeid);
+	// 		ListInsert(new->traps, trap);
+
+	// 	} else {
+	// 		char abbv[3];
+	// 		abbv[0] = token[1];
+	// 		abbv[1] = token[2];
+	// 		abbv[2] = '\0';
+	// 		PlaceId placeid = placeAbbrevToId(abbv); 
+
+	// 	}
+
+	// 	token = strtok(NULL, " ");
+	// }
 	return new;
 }
 
@@ -141,7 +170,7 @@ PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 PlaceId DvGetVampireLocation(DraculaView dv)
 {
 	
-	return NOWHERE;
+	return dv->vampLoc;
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
@@ -156,9 +185,12 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedMoves = 0;
-	return NULL;
+	if (dv->round == 0){
+		*numReturnedMoves = 0;
+		return NULL;
+	}
+
+
 }
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)

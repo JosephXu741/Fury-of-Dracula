@@ -51,6 +51,7 @@ struct gameView {
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
+	int *numTraps;
 } ;
 
 ////////////////////////////////////////////////////////////////////////

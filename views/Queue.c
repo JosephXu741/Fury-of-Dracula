@@ -15,7 +15,7 @@ typedef struct QueueRep {
 } QueueRep;
 
 // create new empty Queue
-Queue newQueue()
+Trail newTrail()
 {
 	Queue q;
 	q = malloc(sizeof(QueueRep));
@@ -26,7 +26,7 @@ Queue newQueue()
 }
 
 // free memory used by Queue
-void dropQueue(Queue Q)
+void dropTrail(Queue Q)
 {
 	QueueNode *curr, *next;
 	assert(Q != NULL);
@@ -42,7 +42,7 @@ void dropQueue(Queue Q)
 }
 
 // display as 3 > 5 > 4 > ...
-void showQueue(Queue Q)
+void showTrail(Queue Q)
 {
 	QueueNode *curr;
 	assert(Q != NULL);
@@ -58,7 +58,7 @@ void showQueue(Queue Q)
 }
 
 // add item at end of Queue 
-void QueueJoin(Queue Q, Item it)
+void TrailJoin(Queue Q, Item it)
 {
 	assert(Q != NULL);
 	QueueNode *new = malloc(sizeof(QueueNode));
@@ -73,7 +73,7 @@ void QueueJoin(Queue Q, Item it)
 }
 
 // remove item from front of Queue
-Item QueueLeave(Queue Q)
+Item TrailLeave(Queue Q)
 {
 	assert(Q != NULL);
 	assert(Q->head != NULL);
@@ -87,7 +87,7 @@ Item QueueLeave(Queue Q)
 }
 
 // check for no items
-int QueueIsEmpty(Queue Q)
+int TrailIsEmpty(Queue Q)
 {
 	return (Q->head == NULL);
 }

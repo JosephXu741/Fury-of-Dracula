@@ -31,18 +31,18 @@ typedef struct hunter {
 	int id;
 	int health;
 	PlaceId place;
-	PlaceId *moveHistory;
 } Hunter;
 
 typedef struct dracula {
 	int id;
 	int health;
 	PlaceId place;
-	PlaceId *moveHistory;
 } Dracula;
 
 
 struct draculaView {
+	char *pastPlays;
+	Message messages;
 	Map map;
 	int score;
 	Round round;
@@ -68,6 +68,8 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 		exit(EXIT_FAILURE);
 	}
 	GameView gv = GvNew(pastPlays, messages);
+	new->pastPlays = pastPlays;
+	strcpy(new->messages, messages);
 	new->round = GvGetRound(gv);
 	new->score = GvGetScore(gv);
 	new->map = MapNew();
@@ -77,8 +79,6 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
 	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
 	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
-	new->Lord_Godalming.place = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, new->numReturnedMoves, false);
-
 
 	new->Dr_Seward.id = PLAYER_DR_SEWARD;
     new->Dr_Seward.health = GvGetHealth(gv, PLAYER_DR_SEWARD);
@@ -101,37 +101,13 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 
 	new->vampLoc = GvGetVampireLocation(gv);
 	new->trapLocations = GvGetTrapLocations(gv, new->numTraps);
-	// char s[10000];
-	// strcpy(s, pastPlays);
-	// char *token = strtok(s, " ");
-	// while (token != NULL){
-	// 	int cmp = strncmp(token, "D", 1);
-	// 	if (cmp == 0){
-	// 		char abbv[3];
-	// 		abbv[0] = token[1];
-	// 		abbv[1] = token[2];
-	// 		abbv[2] = '\0';
-	// 		PlaceId placeid = placeAbbrevToId(abbv); 
-	// 		QueueJoin(new->trail, placeid);
-	// 		ListInsert(new->traps, trap);
 
-	// 	} else {
-	// 		char abbv[3];
-	// 		abbv[0] = token[1];
-	// 		abbv[1] = token[2];
-	// 		abbv[2] = '\0';
-	// 		PlaceId placeid = placeAbbrevToId(abbv); 
-
-	// 	}
-
-	// 	token = strtok(NULL, " ");
-	// }
 	return new;
 }
 
 void DvFree(DraculaView dv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	free(dv->trapLocations);
 	free(dv);
 }
 
@@ -145,8 +121,7 @@ Round DvGetRound(DraculaView dv)
 
 int DvGetScore(DraculaView dv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	return dv->score;
 }
 
 int DvGetHealth(DraculaView dv, Player player)
@@ -161,6 +136,8 @@ int DvGetHealth(DraculaView dv, Player player)
 		health = dv->Van_Helsing.health;
 	} else if (dv->Mina_Harker.id == player) {
 		health = dv->Mina_Harker.health;
+	} else if (dv->Dracula.id == player) {
+		health = dv->Dracula.health;
 	} 
 
 	return health;
@@ -169,34 +146,28 @@ int DvGetHealth(DraculaView dv, Player player)
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	assert(dv->round >= 1);
+	PlaceId location;
 	if (dv->round == 1) {
-		if (player == dv->Lord_Godalming.id /*&& location is HOSPITAL*/) return NOWHERE;			
-		if (player == dv->Dr_Seward.id /*&& location is HOSPITAL*/) return NOWHERE;		
-		if (player == dv->Van_Helsing.id /*&& location is HOSPITAL*/) return NOWHERE;		
-		if (player == dv->Mina_Harker.id /*&& location is HOSPITAL*/) return NOWHERE;	
-	    if (player == dv->Dracula.id /*&& location is CASTLE/*/) return NOWHERE;	
+		if (player == dv->Lord_Godalming.id /*&& location is HOSPITAL*/) return dv->Lord_Godalming.place;			
+		if (player == dv->Dr_Seward.id /*&& location is HOSPITAL*/) return dv->Dr_Seward.place;		
+		if (player == dv->Van_Helsing.id /*&& location is HOSPITAL*/) return dv->Van_Helsing.place;		
+		if (player == dv->Mina_Harker.id /*&& location is HOSPITAL*/) return dv->Mina_Harker.place;	
+	    if (player == dv->Dracula.id /*&& location is CASTLE/*/) return dv->Dracula.place;	
 	}	
-	printf("The location of player is at location\n");
-	PlaceId location = NOWHERE;	
-		
-	
-	
-	return location;
+	return NOWHERE;
+
 }
 
 
 PlaceId DvGetVampireLocation(DraculaView dv)
 {
-	
 	return dv->vampLoc;
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numTraps = 0;
-	return NULL;
+	*numTraps = dv->numTraps;
+	return dv->trapLocations;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -209,42 +180,244 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 		return NULL;
 	}
 
+	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, numReturnedMoves);
+	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedMoves, false);
+	int hide = 0;
+	int db = 0;
+	int newSize = 0;
+	PlaceId *new;
+	for (int i = 0; last_moves[i]; i++){
+		if (last_moves[i] == HIDE){
+			hide = 1;
+		}
+		if (last_moves[i] >= DOUBLE_BACK_1 && last_moves[i] <= DOUBLE_BACK_5){
+			db = 1;
+		}
+	}
+	if (hide = 0) {
+		new = realloc(new, (newSize + 1) * sizeof(*new));
+		new[newSize] = HIDE;
+		newSize++;
+	} 
+
+
+	for (int i = 0; reachable[i]; i++){
+		int dupe = 0;
+		for (int j = 0; last_moves[j]; j++){
+			if (reachable[i] == last_moves[j]){
+				dupe = 1;
+				if (db == 0){
+					new = realloc(new, (newSize + 1) * sizeof(*new));
+					new[newSize] = DOUBLE_BACK_1 + j;
+					newSize++;
+				}
+			}
+		}
+		if (dupe == 0) {
+			new = realloc(new, (newSize + 1) * sizeof(*new));
+			new[newSize] = reachable[i];
+			newSize++;
+		}
+	}
+
+	if (newSize == 0){
+		*numReturnedMoves = 0;
+		return NULL;
+	}
+
+	return new;
 
 }
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	return NULL;
+	if (dv->round == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, numReturnedLocs);
+	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
+	int hide = 0;
+	int db = 0;
+	int newSize = 0;
+	PlaceId *new;
+	for (int i = 0; last_moves[i]; i++){
+		if (last_moves[i] == dv->Dracula.place){
+			hide = 1;
+		}
+		if (last_moves[i] >= DOUBLE_BACK_1 && last_moves[i] <= DOUBLE_BACK_5){
+			db = 1;
+		}
+	}
+	if (hide = 0) {
+		new = realloc(new, (newSize + 1) * sizeof(*new));
+		new[newSize] = HIDE;
+		newSize++;
+	} 
+
+
+	for (int i = 0; reachable[i]; i++){
+		int dupe = 0;
+		for (int j = 0; last_moves[j]; j++){
+			if (reachable[i] == last_moves[j]){
+				dupe = 1;
+				if (db == 0){
+					new = realloc(new, (newSize + 1) * sizeof(*new));
+					new[newSize] = reachable[i];
+					newSize++;
+				}
+			}
+		}
+		if (dupe == 0) {
+			new = realloc(new, (newSize + 1) * sizeof(*new));
+			new[newSize] = reachable[i];
+			newSize++;
+		}
+	}
+
+	if (newSize == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+
+	return new;
+
 }
+
+
 
 PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	return NULL;
+	
+	if (dv->round == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	PlaceId *reachable = GvGetReachableByType(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, road, false, boat, numReturnedLocs);
+	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
+	int hide = 0;
+	int db = 0;
+	int newSize = 0;
+	PlaceId *new;
+	for (int i = 0; last_moves[i]; i++){
+		if (last_moves[i] == dv->Dracula.place){
+			hide = 1;
+		}
+		if (last_moves[i] >= DOUBLE_BACK_1 && last_moves[i] <= DOUBLE_BACK_5){
+			db = 1;
+		}
+	}
+	if (hide = 0) {
+		new = realloc(new, (newSize + 1) * sizeof(*new));
+		new[newSize] = HIDE;
+		newSize++;
+	} 
+
+
+	for (int i = 0; reachable[i]; i++){
+		int dupe = 0;
+		for (int j = 0; last_moves[j]; j++){
+			if (reachable[i] == last_moves[j]){
+				dupe = 1;
+				if (db == 0){
+					new = realloc(new, (newSize + 1) * sizeof(*new));
+					new[newSize] = reachable[i];
+					newSize++;
+				}
+			}
+		}
+		if (dupe == 0) {
+			new = realloc(new, (newSize + 1) * sizeof(*new));
+			new[newSize] = reachable[i];
+			newSize++;
+		}
+	}
+
+	if (newSize == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+
+	return new;
 }
 
 PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
                           int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	return NULL;
+
+	// Implement something that detects if the player has had their turn yet
+
+	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	int newSize = 0;
+	PlaceId *new;
+	for (Player p = 0; p < 4; p++) {
+		PlaceId location = DvGetPlayerLocation(dv, p);
+		PlaceId *reachable = GvGetReachable(gv, p, dv->round, location, numReturnedLocs);
+
+		for (int i = 0; reachable[i]; i++){
+			int dupe = 0;
+			for (int j = 0; new[j]; j++){
+				if (reachable[i] == new[j]){
+					dupe = 1;
+				}
+			}
+			if (dupe == 0) {
+				new = realloc(new, (newSize + 1) * sizeof(*new));
+				new[newSize] = reachable[i];
+				newSize++;
+			}
+		}
+	}
+
+	if (newSize == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+
+	return new;
 }
 
 PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
-	return NULL;
+
+	// Implement something that detects if the player has had their turn yet
+
+	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	int newSize = 0;
+	PlaceId *new;
+	for (Player p = 0; p < 4; p++) {
+		PlaceId location = DvGetPlayerLocation(dv, p);
+		PlaceId *reachable = GvGetReachableByType(gv, p, dv->round, location, road, rail, boat, numReturnedLocs);
+
+		for (int i = 0; reachable[i]; i++){
+			int dupe = 0;
+			for (int j = 0; new[j]; j++){
+				if (reachable[i] == new[j]){
+					dupe = 1;
+				}
+			}
+			if (dupe == 0) {
+				new = realloc(new, (newSize + 1) * sizeof(*new));
+				new[newSize] = reachable[i];
+				newSize++;
+			}
+		}
+	}
+
+	if (newSize == 0){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
+
+	return new;
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
-
 // TODO

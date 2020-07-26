@@ -21,7 +21,7 @@
 #include "Map.h"
 #include "Places.h"
 #include "Queue.h"
-#include "List.h"
+#include "Trap.h"
 // add your own #includes here
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1

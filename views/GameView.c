@@ -18,9 +18,9 @@
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
-#include "Places.h"
 #include "trap.h"
 #include "Queue.h"
+#include "Places.h"
 // add your own #includes here
 
 #define ALL_TRAPS 0
@@ -31,17 +31,18 @@
 typedef struct hunter {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
 } Hunter;
 
 typedef struct dracula {
 	int id;
 	int health;
-	Place place;
+	PlaceId place;
 } Dracula;
 
 
 struct gameView {
+	char *pastPlays;
 	Message message;
 	Map map;
 	int score;
@@ -56,6 +57,8 @@ struct gameView {
 	int *numTraps;
 } ;
 
+
+char *playerToLetter(GameView gv, Player player);
 ////////////////////////////////////////////////////////////////////////
 // Constructor/Destructor
 
@@ -116,13 +119,11 @@ void GvFree(GameView gv)
 
 Round GvGetRound(GameView gv)
 {
-	// TODO
 	return gv->round;
 }
 
 Player GvGetPlayer(GameView gv)
 {
-	// TODO
 	int player = gv->turn % 6;			//mod 6????????
 	switch(player) {
 		case 0 :
@@ -149,35 +150,49 @@ Player GvGetPlayer(GameView gv)
 
 int GvGetScore(GameView gv)
 {
-	// TODO
 	return gv->score;
 }
 
 int GvGetHealth(GameView gv, Player player)
 {
-	// TODO
-	return player->health;
+	int health;
+
+	if (gv->Lord_Godalming.id == player) {
+		health = gv->Lord_Godalming.health;
+	} else if (gv->Dr_Seward.id == player) {
+		health = gv->Dr_Seward.health;
+	} else if (gv->Van_Helsing.id == player) {
+		health = gv->Van_Helsing.health;
+	} else if (gv->Mina_Harker.id == player) {
+		health = gv->Mina_Harker.health;
+	} else if (gv->Dracula.id == player) {
+		health = gv->Dracula.health;
+	} 
+
+	return health;
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	PlaceId location;
+	if (gv->round == 1) {
+		if (player == gv->Lord_Godalming.id /*&& location is HOSPITAL*/) return gv->Lord_Godalming.place;			
+		if (player == gv->Dr_Seward.id /*&& location is HOSPITAL*/) return gv->Dr_Seward.place;		
+		if (player == gv->Van_Helsing.id /*&& location is HOSPITAL*/) return gv->Van_Helsing.place;		
+		if (player == gv->Mina_Harker.id /*&& location is HOSPITAL*/) return gv->Mina_Harker.place;	
+	    if (player == gv->Dracula.id /*&& location is CASTLE/*/) return gv->Dracula.place;	
+	}	
 	return NOWHERE;
 }
 
 PlaceId GvGetVampireLocation(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return NOWHERE;
+	return GetVampireLocation(gv->trail);
 }
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
-	// TODO
-	// Gets the locations of all active traps.
-	//This  function should return the locations in a dynamically allocated array
-
-	return getTrailLocation(gv->trail);
+	return getTrapsLocation(gv->trail);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -186,10 +201,39 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	PlaceId *history;
+	int numMoves = 0;
+	char s[10000];
+    strcpy(s, gv->pastPlays);
+    char *token = strtok(s, " ");
+	char *letter = playerToLetter(gv, player);
+    while (token != NULL){
+		if (strncmp(token, letter, 1) == 0) {
+			char abbv[3];
+			abbv[0] = token[1];
+			abbv[1] = token[2];
+			abbv[2] = '\0';
+			PlaceId move = placeAbbrevToId(abbv); 
+
+			history = realloc(history, (numMoves + 1) * sizeof(*history));
+			history[numMoves] = move;
+			numMoves++;
+		}
+        token = strtok(NULL, " ");
+    }
+
 	*numReturnedMoves = 0;
 	*canFree = false;
 	return NULL;
+}
+
+char *playerToLetter(GameView gv, Player player)
+{
+	if (player == gv->Lord_Godalming.id) return "G";			
+	if (player == gv->Dr_Seward.id) return "S";		
+	if (player == gv->Van_Helsing.id) return "H";		
+	if (player == gv->Mina_Harker.id) return "M";	
+	if (player == gv->Dracula.id) return "D";
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,

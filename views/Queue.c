@@ -27,6 +27,19 @@ Queue newTrail()
 	return q;
 }
 
+PlaceId GetVampireLocation (Queue Q)
+{
+	QueueNode *curr = Q->head;
+	while (curr != NULL) {
+		if (curr->traptype == IMMATURE_VAMPIRE){
+			return curr->location;
+		}
+		curr = curr->next;
+	}
+	return NULL;
+}
+
+
 // free memory used by Queue
 void dropTrail(Queue Q)
 {

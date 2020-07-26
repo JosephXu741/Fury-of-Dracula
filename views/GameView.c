@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Game.h"
 #include "GameView.h"
@@ -21,8 +22,10 @@
 #include "List.h"
 #include "Queue.h"
 // add your own #includes here
-#define PREMATURE_VAMPIRE 0
-#define REGULAR_TRAP	  1
+
+#define ALL_TRAPS 0
+#define PREMATURE_VAMPIRE 1
+#define REGULAR_TRAP	  2
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 typedef struct hunter {
@@ -64,6 +67,37 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
+	new->traps = newTrapList();
+	new->trail = newTrail();
+	new ->map = MapNew();
+
+	char s[10000];
+    strcpy(s, pastPlays);
+    char *token = strtok(s, " ");
+    while (token != NULL){
+        int cmp = strncmp(token, "D", 1);
+        if (cmp == 0){
+            char abbv[3];
+            abbv[0] = token[1];
+            abbv[1] = token[2];
+            abbv[2] = '\0';
+            PlaceId placeid = placeAbbrevToId(abbv); 
+            TrailJoin(new->trail, placeid);
+            
+
+        } else {
+            char abbv[3];
+            abbv[0] = token[1];
+            abbv[1] = token[2];
+            abbv[2] = '\0';
+            PlaceId placeid = placeAbbrevToId(abbv); 
+
+        }
+		
+
+        token = strtok(NULL, " ");
+    }
+	
 
 
 	return new;
@@ -140,30 +174,8 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 	// TODO
 	// Gets the locations of all active traps.
 	//This  function should return the locations in a dynamically allocated array
-	
-	// number of items in list / number of traps in list
-	int numAllTraps = ListLength(gv->traps);
 
-	// Array of trap for all locations
-	PlaceId results = malloc(sizeof(PlaceId) * numAllTraps);
-	
-	// Insert into array
-	// TODO: did not include list.c, can't go through the list????
-
-	int count = 0;
-	struct TrapList *curr = gv->traps->first;
-	while (curr != NULL) {
-		
-
-
-		curr = curr->next;
-	}
-
-
-
-
-	*numTraps = count;
-	return results;
+	return getTrailLocation(gv->trail);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -227,5 +239,3 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
-
-// TODO

@@ -9,6 +9,10 @@ typedef int Item;
 typedef int Key;
 typedef Item Trap;
 
+#define eq(a,b) ItemEQ(a,b)
+#define gt(a,b) ItemGT(a,b)
+#define key(a)  ItemKey(a)
+
 #define ItemCopy(i)     (i)
 #define ItemKey(i)      (i)
 #define ItemEQ(i1,i2)   ((i1) == (i2))

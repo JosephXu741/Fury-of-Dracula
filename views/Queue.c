@@ -5,7 +5,9 @@
 #include "Queue.h"
 
 typedef struct QueueNode {
-	Item value;
+	PlaceId location;
+	bool vampire;
+	int trapNum;
 	struct QueueNode *next;
 } QueueNode;
 
@@ -41,29 +43,33 @@ void dropTrail(Queue Q)
 	free(Q);
 }
 
-// display as 3 > 5 > 4 > ...
-void showTrail(Queue Q)
+// returns dynamic array of the locations containing traps/trail
+PlaceId *getTrailLocation(Queue Q)
 {
 	QueueNode *curr;
 	assert(Q != NULL);
-	// free list nodes
+	
+	PlaceId *arr = calloc(TRAIL_SIZE, sizeof(int));
+	int i = 0;
 	curr = Q->head;
 	while (curr != NULL) {
-		ItemShow(curr->value);
-		if (curr->next != NULL)
-			printf(">");
+		arr[i] = (curr->location);
 		curr = curr->next;
+		i++;
 	}
-	printf("\n");
+	return realloc(arr, i*sizeof(PlaceId));
 }
 
 // add item at end of Queue 
-void TrailJoin(Queue Q, Item it)
+void TrailJoin(Queue Q, PlaceId it)
 {
 	assert(Q != NULL);
 	QueueNode *new = malloc(sizeof(QueueNode));
 	assert(new != NULL);
-	new->value = ItemCopy(it);
+	new->location = ItemCopy(it);
+	new->trapNum = 1;
+	if (SearchTrail(Q, it)) new->trapNum++;
+	new->vampire = false;
 	new->next = NULL;
 	if (Q->head == NULL)
 		Q->head = new;
@@ -73,11 +79,11 @@ void TrailJoin(Queue Q, Item it)
 }
 
 // remove item from front of Queue
-Item TrailLeave(Queue Q)
+PlaceId TrailLeave(Queue Q)
 {
 	assert(Q != NULL);
 	assert(Q->head != NULL);
-	Item it = ItemCopy(Q->head->value);
+	PlaceId it = ItemCopy(Q->head->location);
 	QueueNode *old = Q->head;
 	Q->head = old->next;
 	if (Q->head == NULL)
@@ -90,4 +96,16 @@ Item TrailLeave(Queue Q)
 int TrailIsEmpty(Queue Q)
 {
 	return (Q->head == NULL);
+}
+// searches a trail via a key (placeid) and returns it
+PlaceId* SearchTrail(Queue Q, Key k) { 
+	assert(Q != NULL);
+	QueueNode *curr = Q->head;
+	while (curr != NULL) {
+		if (eq(k,key(curr->location)))
+			return &(curr->location);
+		else
+			curr = curr->next;
+	}
+	return NULL; // key not found
 }

@@ -24,8 +24,7 @@
 // add your own #includes here
 
 #define ALL_TRAPS 0
-#define PREMATURE_VAMPIRE 1
-#define REGULAR_TRAP	  2
+
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 typedef struct hunter {
@@ -108,14 +107,15 @@ GameView GvNew(char *pastPlays, Message messages[])
 				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
 			}
 			if (dEncounter[0] == 'T') {
-				// sets a trap
+				TrailJoin(new->trail, NORMAL_TRAP, new->Dracula.place);
 			}
 			else if (dEncounter[1] == 'V') {
-				// vampire spawned at location
+				TrailJoin(new->trail, IMMATURE_VAMPIRE, new->Dracula.place);
 			}
 
 			if (dAction != '.') { // trap expired / vampire matured
-				TrailLeave(new->trail);
+				TrapId type = TrailLeave(new->trail);
+				if (type == IMMATURE_VAMPIRE) new->score -= SCORE_LOSS_VAMPIRE_MATURES;
 			}
 	
             
@@ -137,12 +137,13 @@ GameView GvNew(char *pastPlays, Message messages[])
 			char hVamp = token[4];
 			char hDrac = token[5];
 
-			if (hTrap == 'T') {
+			if (hTrap == 'T') {		
+				TrapRemove(new->trail, player.place);
 				player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
-				// hunter runs into a trap
 			}
 			if (hVamp = 'V') {
-				// hunter encounters immature vampire
+				int trap = TrapRemove(new->trail, player.place);
+				
 			}
 			if (hDrac = 'D') { // hunter encounters dracula
 				player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;

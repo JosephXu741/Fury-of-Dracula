@@ -70,36 +70,87 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->trail = newTrail();
 	new->map = MapNew();
 	new->score = GAME_START_SCORE;
-	
+
+	new->Lord_Godalming.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Dr_Seward.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
+	new->Dracula.health = GAME_START_BLOOD_POINTS;
 
 	char s[10000];
     strcpy(s, pastPlays);
     char *token = strtok(s, " ");
     while (token != NULL){
         int cmp = strncmp(token, "D", 1);
-        if (cmp == 0){
-            char abbv[3];
+        if (cmp == 0){									// Dracula past moves
+            char abbv[3];		
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
+
+			char dEncounter[3];
+			dEncounter[0] = token[3];
+			dEncounter[1] = token[4];
+			dEncounter[2] = '\0';
+
+			char dAction = token[5];
+
             PlaceId placeid = placeAbbrevToId(abbv); 
             TrailJoin(new->trail, placeid);
 			if (TrailLength(new->trail) >= TRAIL_SIZE) {
 				TrailLeave(new->trail);
 			}
+			if (abbv == "TP") {
+				new->Dracula.place = CASTLE_DRACULA;
+				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
+			}
+			if (dEncounter[0] == 'T') {
+				// sets a trap
+			}
+			else if (dEncounter[1] == 'V') {
+				// vampire spawned at location
+			}
+
+			if (dAction != '.') { // trap expired / vampire matured
+				TrailLeave(new->trail);
+			}
+	
             
-        } else {
+            
+        } else {										// Hunter past moves
+			Hunter player;
+			if (token[0] == 'G') player =  new->Lord_Godalming; 
+			if (token[0] == 'S') player =  new->Dr_Seward; 
+			if (token[0] == 'H') player =  new->Van_Helsing; 
+			if (token[0] == 'M') player =  new->Mina_Harker; 
+
             char abbv[3];
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
             PlaceId placeid = placeAbbrevToId(abbv); 
 
+			char hTrap = token[3];
+			char hVamp = token[4];
+			char hDrac = token[5];
+
+			if (hTrap == 'T') {
+				player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
+				// hunter runs into a trap
+			}
+			if (hVamp = 'V') {
+				// hunter encounters immature vampire
+			}
+			if (hDrac = 'D') { // hunter encounters dracula
+				player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+				new->Dracula.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+			}
+            
         }
 		total_turns++;
         token = strtok(NULL, " ");
     }
-	new->round = total_turns/NUM_PLAYERS + 1;
+	new->round = total_turns/NUM_PLAYERS;
 	new->numTraps = TotalTrapsTrail(new->trail);
 	
 	return new;

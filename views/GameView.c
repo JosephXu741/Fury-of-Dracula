@@ -259,13 +259,12 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
     char *token = strtok(s, " ");
 	char *letter = playerToLetter(gv, player);
     while (token != NULL){
-		if (strncmp(token, letter, 1) == 0) {
+			if (strncmp(token, letter, 1) == 0) {
 			char abbv[3];
 			abbv[0] = token[1];
 			abbv[1] = token[2];
 			abbv[2] = '\0';
 			PlaceId move = placeAbbrevToId(abbv); 
-
 			history = realloc(history, (numMoves + 1) * sizeof(*history));
 			history[numMoves] = move;
 			numMoves++;
@@ -273,9 +272,9 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
         token = strtok(NULL, " ");
     }
 
-	*numReturnedMoves = 0;
+	*numReturnedMoves = numMoves;
 	*canFree = false;
-	return NULL;
+	return history;
 }
 
 char *playerToLetter(GameView gv, Player player)
@@ -290,10 +289,29 @@ char *playerToLetter(GameView gv, Player player)
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedMoves = 0;
+	PlaceId *history;
+	int num = 0;
+	char s[10000];
+    strcpy(s, gv->pastPlays);
+    char *token = strtok(s, " ");
+	char *letter = playerToLetter(gv, player);
+    while (token != NULL && num < numMoves){
+			if (strncmp(token, letter, 1) == 0) {
+			char abbv[3];
+			abbv[0] = token[1];
+			abbv[1] = token[2];
+			abbv[2] = '\0';
+			PlaceId move = placeAbbrevToId(abbv); 
+			history = realloc(history, (numMoves + 1) * sizeof(*history));
+			history[numMoves] = move;
+			num++;
+		}
+        token = strtok(NULL, " ");
+    }
+
+	*numReturnedMoves = num;
 	*canFree = false;
-	return NULL;
+	return history;
 }
 
 PlaceId *GvGetLocationHistory(GameView gv, Player player,

@@ -6,18 +6,18 @@
 
 typedef struct QueueNode {
 	PlaceId location;
-	bool vampire;
-	int trapNum;
+	TrapId traptype;
 	struct QueueNode *next;
 } QueueNode;
 
 typedef struct QueueRep {
+	int trapNum;
 	QueueNode *head;  // ptr to first node
 	QueueNode *tail;  // ptr to last node
 } QueueRep;
 
 // create new empty Queue
-Trail newTrail()
+Queue newTrail()
 {
 	Queue q;
 	q = malloc(sizeof(QueueRep));
@@ -44,48 +44,56 @@ void dropTrail(Queue Q)
 }
 
 // returns dynamic array of the locations containing traps/trail
-PlaceId *getTrailLocation(Queue Q)
+PlaceId *getTrapsLocations(Queue Q)
 {
 	QueueNode *curr;
 	assert(Q != NULL);
 	
-	PlaceId *arr = calloc(TRAIL_SIZE, sizeof(int));
-	int i = 0;
+	PlaceId *arr = calloc(Q->trapNum, sizeof(int));
 	curr = Q->head;
+	int i = 0;
 	while (curr != NULL) {
-		arr[i] = (curr->location);
+		if (curr->traptype == NORMAL_TRAP){
+			arr[i] = curr->location;
+			i++;
+		}
 		curr = curr->next;
-		i++;
 	}
-	return realloc(arr, i*sizeof(PlaceId));
+	return arr;
 }
 
 // add item at end of Queue 
-void TrailJoin(Queue Q, PlaceId it)
+void TrailJoin(Queue Q, TrapId traptype, PlaceId location)
 {
 	assert(Q != NULL);
 	QueueNode *new = malloc(sizeof(QueueNode));
 	assert(new != NULL);
-	new->location = ItemCopy(it);
-	new->trapNum = 1;
-	if (SearchTrail(Q, it)) new->trapNum++;
-	new->vampire = false;
+	new->location = location;
+	new->traptype = traptype;
+	//if (SearchTrail(Q, it)) new->trapNum++;
 	new->next = NULL;
 	if (Q->head == NULL)
 		Q->head = new;
 	if (Q->tail != NULL)
 		Q->tail->next = new;
 	Q->tail = new;
+
+	if (traptype == NORMAL_TRAP) {
+		Q->trapNum++;
+	}
 }
 
 // remove item from front of Queue
-PlaceId TrailLeave(Queue Q)
+TrapId TrailLeave(Queue Q)
 {
 	assert(Q != NULL);
 	assert(Q->head != NULL);
-	PlaceId it = ItemCopy(Q->head->location);
+	TrapId it = Q->head->traptype;
 	QueueNode *old = Q->head;
 	Q->head = old->next;
+	if (it == NORMAL_TRAP){
+		Q->trapNum--;
+	}
 	if (Q->head == NULL)
 		Q->tail = NULL;
 	free(old);
@@ -97,15 +105,20 @@ int TrailIsEmpty(Queue Q)
 {
 	return (Q->head == NULL);
 }
-// searches a trail via a key (placeid) and returns it
-PlaceId* SearchTrail(Queue Q, Key k) { 
+// searches a trail via a key (placeid) and returns the trap it
+TrapId TrapRemove(Queue Q, PlaceId location) 
+{ 
 	assert(Q != NULL);
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
-		if (eq(k,key(curr->location)))
-			return &(curr->location);
-		else
+		if (curr->location == location){
+			if (curr->traptype == NORMAL_TRAP) {
+				Q->trapNum--;
+			}
+			return curr->traptype;
+		} else {
 			curr = curr->next;
+		}	
 	}
 	return NULL; // key not found
 }
@@ -117,11 +130,5 @@ int TrailLength(Queue Q){
 	return length;
 }
 int TotalTrapsTrail(Queue Q){
-	int tNum = 0;
-	QueueNode* curr = Q->head;
-	while ( curr != NULL) { 
-		tNum += curr->trapNum;
-		curr = curr->next;
-	}
-	return tNum;
+	return Q->trapNum;
 }

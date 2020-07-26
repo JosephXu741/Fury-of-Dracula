@@ -19,7 +19,7 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "List.h"
+#include "trap.h"
 #include "Queue.h"
 // add your own #includes here
 
@@ -47,8 +47,7 @@ struct gameView {
 	int score;
 	int turn;
 	Round round;
-	Trail trail;		// a queue of all dracula's trails
-	TrapList traps;		// a list of all traps
+	Trail trail;		// a queue of all dracula's trails and traps
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
 	Hunter Van_Helsing;
@@ -68,7 +67,6 @@ GameView GvNew(char *pastPlays, Message messages[])
 		exit(EXIT_FAILURE);
 	}
 	int total_turns = 0;
-	new->traps = newTrapList();
 	new->trail = newTrail();
 	new->map = MapNew();
 	new->score = GAME_START_SCORE;

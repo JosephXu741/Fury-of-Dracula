@@ -16,6 +16,6 @@ void TrapListInsert(List,Item); // add item into list
 void TrapListDelete(List,Key); // remove item
 PlaceId *TrapLocations(List,Key); // return dynamically allocated array
 PlaceId *TrapListSearch(List,Key); // return item with key
-int  TrapListLength(List); // # items in list
+int TrapListLength(List); // # items in list
 
 #endif

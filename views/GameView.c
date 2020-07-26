@@ -20,9 +20,13 @@
 #include "Places.h"
 #include "List.h"
 #include "Queue.h"
+#include "Map.h"
+
 // add your own #includes here
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
+#define HUNTER 			100
+#define DRACULA 		200
 
 // TODO: ADD YOUR OWN STRUCTS HERE
 typedef struct hunter {
@@ -138,33 +142,13 @@ PlaceId GvGetVampireLocation(GameView gv)
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
 	// TODO
-	// Gets the locations of all active traps.
-	//This  function should return the locations in a dynamically allocated array
-	
-	// number of items in list / number of traps in list
-	int numAllTraps = ListLength(gv->traps);
-
-	// Array of trap for all locations
-	PlaceId results = malloc(sizeof(PlaceId) * numAllTraps);
-	
-	// Insert into array
-	// TODO: did not include list.c, can't go through the list????
-
-	int count = 0;
-	struct TrapList *curr = gv->traps->first;
-	while (curr != NULL) {
-		
-
-
-		curr = curr->next;
-	}
-
-
-
-
-	*numTraps = count;
-	return results;
+	*numTraps = TrapListLength(gv->traps);
+	return TrapLocations(gv->traps);
 }
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 // Game History
@@ -211,7 +195,16 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	
+
+
+
+
+
+
+
+
+
 	*numReturnedLocs = 0;
 	return NULL;
 }

@@ -19,6 +19,13 @@
 
 #include "Map.h"
 #include "Places.h"
+#include "Game.h"
+
+#define HUNTER 100
+#define DRACULA 200
+
+
+
 
 struct map {
 	int nV; // number of vertices
@@ -194,3 +201,35 @@ ConnList MapGetConnections(Map m, PlaceId p)
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+// find the reachable places from the current place
+// given the type of players
+PlaceId *MapGetReachable (Map m, PlaceId p, int playerType, Round round)
+{
+	PlaceId *arr = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	
+	if (playerType == HUNTER) {
+		// go through connections list, add into return arr.
+		
+
+
+	
+	} elseif (playerType == DRACULA) {
+
+
+
+
+	}
+
+	return arr;
+}
+
+
+
+
+
+
+
+
+
+

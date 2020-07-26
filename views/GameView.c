@@ -67,9 +67,12 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
+	int total_turns = 0;
 	new->traps = newTrapList();
 	new->trail = newTrail();
-	new ->map = MapNew();
+	new->map = MapNew();
+	new->score = GAME_START_SCORE;
+	
 
 	char s[10000];
     strcpy(s, pastPlays);
@@ -83,8 +86,10 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[2] = '\0';
             PlaceId placeid = placeAbbrevToId(abbv); 
             TrailJoin(new->trail, placeid);
+			if (TrailLength(new->trail) >= TRAIL_SIZE) {
+				TrailLeave(new->trail);
+			}
             
-
         } else {
             char abbv[3];
             abbv[0] = token[1];
@@ -93,13 +98,12 @@ GameView GvNew(char *pastPlays, Message messages[])
             PlaceId placeid = placeAbbrevToId(abbv); 
 
         }
-		
-
+		total_turns++;
         token = strtok(NULL, " ");
     }
+	new->round = total_turns/NUM_PLAYERS + 1;
+	new->numTraps = TotalTrapsTrail(new->trail);
 	
-
-
 	return new;
 }
 

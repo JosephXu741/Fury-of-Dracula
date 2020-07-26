@@ -109,3 +109,19 @@ PlaceId* SearchTrail(Queue Q, Key k) {
 	}
 	return NULL; // key not found
 }
+
+int TrailLength(Queue Q){
+	int length = 0;
+	for (QueueNode* curr = Q->head; curr != NULL; length++) 
+	curr = curr->next;
+	return length;
+}
+int TotalTrapsTrail(Queue Q){
+	int tNum = 0;
+	QueueNode* curr = Q->head;
+	while ( curr != NULL) { 
+		tNum += curr->trapNum;
+		curr = curr->next;
+	}
+	return tNum;
+}

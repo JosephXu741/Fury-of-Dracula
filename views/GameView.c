@@ -44,13 +44,14 @@ struct gameView {
 	int score;
 	int turn;
 	Round round;
-	Trail trail;
-	TrapList traps;
+	Trail trail;		// a queue of all dracula's trails
+	TrapList traps;		// a list of all traps
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
+	int *numTraps;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -79,26 +80,47 @@ void GvFree(GameView gv)
 
 Round GvGetRound(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	// TODO
+	return gv->round;
 }
 
 Player GvGetPlayer(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return PLAYER_LORD_GODALMING;
+	// TODO
+	int player = gv->turn % 6;			//mod 6????????
+	switch(player) {
+		case 0 :
+			player = PLAYER_LORD_GODALMING;
+			break;
+		case 1 :
+			player = PLAYER_DR_SEWARD;
+			break;
+		case 2 :
+			player = PLAYER_VAN_HELSING;
+			break;
+		case 3 :
+			player = PLAYER_MINA_HARKER;
+			break;
+		case 4 :
+			player = PLAYER_DRACULA;
+			break;
+		default :
+			player = PLAYER_LORD_GODALMING;
+   }
+	return player;
 }
+
 
 int GvGetScore(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	// TODO
+	return gv->score;
 }
 
 int GvGetHealth(GameView gv, Player player)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return 0;
+	// TODO
+	return player->health;
 }
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
@@ -115,9 +137,33 @@ PlaceId GvGetVampireLocation(GameView gv)
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numTraps = 0;
-	return NULL;
+	// TODO
+	// Gets the locations of all active traps.
+	//This  function should return the locations in a dynamically allocated array
+	
+	// number of items in list / number of traps in list
+	int numAllTraps = ListLength(gv->traps);
+
+	// Array of trap for all locations
+	PlaceId results = malloc(sizeof(PlaceId) * numAllTraps);
+	
+	// Insert into array
+	// TODO: did not include list.c, can't go through the list????
+
+	int count = 0;
+	struct TrapList *curr = gv->traps->first;
+	while (curr != NULL) {
+		
+
+
+		curr = curr->next;
+	}
+
+
+
+
+	*numTraps = count;
+	return results;
 }
 
 ////////////////////////////////////////////////////////////////////////

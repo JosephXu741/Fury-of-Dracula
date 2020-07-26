@@ -54,6 +54,7 @@ struct draculaView {
 	Dracula Dracula;
 	PlaceId *trapLocations;
 	int *numReturnedMoves;
+	int *numTraps;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -71,10 +72,12 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	new->score = GvGetScore(gv);
 	new->map = MapNew();
 
+	new->numReturnedMoves = 0;
+
 	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
 	new->Lord_Godalming.health = GvGetHealth(gv, PLAYER_LORD_GODALMING);
 	new->Lord_Godalming.place = GvGetPlayerLocation(gv, PLAYER_LORD_GODALMING);
-	new->Lord_Godalming.place = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, , false);
+	new->Lord_Godalming.place = GvGetMoveHistory(gv, PLAYER_LORD_GODALMING, new->numReturnedMoves, false);
 
 
 	new->Dr_Seward.id = PLAYER_DR_SEWARD;
@@ -93,9 +96,11 @@ DraculaView DvNew(char *pastPlays, Message messages[])
     new->Dracula.health =  GvGetHealth(gv, PLAYER_LORD_GODALMING);
     new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
 
+	new->numTraps = 0;
+
 
 	new->vampLoc = GvGetVampireLocation(gv);
-	new->trapLocations = GvGetTrapLocations(gv);
+	new->trapLocations = GvGetTrapLocations(gv, new->numTraps);
 	// char s[10000];
 	// strcpy(s, pastPlays);
 	// char *token = strtok(s, " ");

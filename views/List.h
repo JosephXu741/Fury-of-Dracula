@@ -14,7 +14,8 @@ void dropTrapList(List); // free memory used by list
 void showTrapList(List); // display as [1,2,3...]
 void TrapListInsert(List,Item); // add item into list
 void TrapListDelete(List,Key); // remove item
-Item *TrapListSearch(List,Key); // return item with key
+PlaceId *TrapLocations(List,Key); // return dynamically allocated array
+PlaceId *TrapListSearch(List,Key); // return item with key
 int  TrapListLength(List); // # items in list
 
 #endif

@@ -126,8 +126,9 @@ void TrapListDelete(List L, Key k)
 }
 
 // return item with key
-Item *TrapListSearch(List L, Key k)
+PlaceId *TrapListSearch(List L, Key k)
 {
+	
 	assert(L != NULL);
 	ListNode *curr = L->first;
 	while (curr != NULL) {
@@ -137,6 +138,26 @@ Item *TrapListSearch(List L, Key k)
 			curr = curr->next;
 	}
 	return NULL; // key not found
+}
+
+// returns dynamically allocated array containing locations with traps
+PlaceId *TrapLocations(List L, Key k)
+{
+	assert(L != NULL);
+	PlaceId *arr = calloc(TrapListLength(L), sizeof(int));
+	int i = 0;
+	ListNode *curr = L->first;
+	while (curr != NULL) {
+		if (k == 0) {
+			arr[i] = (curr->location);
+		}
+		else if (eq(k,key(curr->location))) {
+			arr[i] = (curr->location);
+		}
+		curr = curr->next;
+		i++;
+	}
+	return realloc(arr, i*sizeof(int));
 }
 
 // # items in list

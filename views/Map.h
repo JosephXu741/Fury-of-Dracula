@@ -49,4 +49,10 @@ int MapNumConnections(Map m, TransportType type);
  */
 ConnList MapGetConnections(Map m, PlaceId p);
 
+
+PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType, 
+	Player player, Round round, int *numReturnedLocs,
+	bool road, bool rail, bool boat);
+
+
 #endif // !defined(FOD__MAP_H_)

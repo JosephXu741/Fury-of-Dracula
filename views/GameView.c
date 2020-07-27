@@ -342,19 +342,27 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 PlaceId *GvGetReachable(GameView gv, Player player, Round round,
                         PlaceId from, int *numReturnedLocs)
 {
-	
-
-
-
-
-
-
-
-
-
 	*numReturnedLocs = 0;
+	
+	if (player == PLAYER_LORD_GODALMING ||
+		player == PLAYER_DR_SEWARD ||
+		player == PLAYER_MINA_HARKER ||
+		player == PLAYER_VAN_HELSING) {
+
+		return *MapGetHunterReachable (gv->map, from, HUNTER, 
+			player, round, numReturnedLocs,
+			true, true, true);
+	}
+
+
+	// TODO: MapGetDraculaReachable
+
+
+
 	return NULL;
 }
+
+
 
 PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
@@ -362,6 +370,20 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 {
 	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
+
+	if (player == PLAYER_LORD_GODALMING ||
+		player == PLAYER_DR_SEWARD ||
+		player == PLAYER_MINA_HARKER ||
+		player == PLAYER_VAN_HELSING) {
+
+		return *MapGetHunterReachable (gv->map, from, HUNTER, 
+			player, round, numReturnedLocs,
+			road, rail, boat);
+	}
+
+
+
+
 	return NULL;
 }
 

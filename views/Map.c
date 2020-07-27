@@ -40,6 +40,12 @@ static inline bool isSentinelEdge(Connection c);
 static ConnList connListInsert(ConnList l, PlaceId v, TransportType type);
 static bool connListContains(ConnList l, PlaceId v, TransportType type);
 
+
+// add
+int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId arr, int curr_i, int *numReturnedLocs);
+int searchInReachable (PlaceId arr, PlaceId newPlace);
+
+
 ////////////////////////////////////////////////////////////////////////
 
 /** Creates a new map. */
@@ -204,31 +210,94 @@ ConnList MapGetConnections(Map m, PlaceId p)
 
 // find the reachable places from the current place
 // given the type of players
-PlaceId *MapGetReachable (Map m, PlaceId p, int playerType, Round round)
+PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType, 
+	Player player, Round round, int *numReturnedLocs,
+	bool road, bool rail, bool boat)
 {
+	assert(playerType == HUNTER);
+
 	PlaceId *arr = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	// stay at the same location: rest
+	arr[0] = p;
+	*numReturnedLocs += 1;
 	
-	if (playerType == HUNTER) {
-		// go through connections list, add into return arr.
+	// go through connections list (adjacency list), add into arr.
+	ConnList *curr = MapGetConnections(m, p);
+	int i = 1;
+	while(curr != NULL) {
+		if(curr->type == ROAD && road == true) {
+			arr[i] = curr->p;
+			*numReturnedLocs += 1;
+			i++;
+
+		} else if (curr->type == BOAT && boat == true) {
+			arr[i] = curr->p;
+			*numReturnedLocs += 1;
+			i++;
 		
+		} else if(curr->type == RAIL && rail == true) {
+			int sum = round + player;
+			if(sum % 4 == 0) {
+				continue;
 
+			} else if(sum % 4 == 1) {
+				arr[i] = curr->p;
+				*numReturnedLocs += 1;
+				i++;
 
-	
-	} elseif (playerType == DRACULA) {
-
-
-
-
+			} else if(sum % 4 == 2 || sum % 4 == 3) {
+				arr[i] = curr->p;
+				*numReturnedLocs += 1;
+				i++;
+				i = furtherRailMove (m, curr->p, 2, arr, i, numReturnedLocs);
+			}
+		}
+		curr = curr->next;
 	}
-
+	
 	return arr;
 }
 
 
+// find the reachable rail move when max allowed distance
+// is more than 1
+// return curr_i (use to increment index for array)
+int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId arr, int curr_i, int *numReturnedLocs)
+{
+	ConnList *curr = MapGetConnections(m, p);
+	while(curr != NULL) {
+		if(curr->type == RAIL) {
 
+			// TODO duplication
+			// avoid adding existing places
+			if (searchInReachable(arr, curr->p) == 0) {
+				arr[curr_i] = curr->p;
+				*numReturnedLocs += 1;
+				curr_i++;
 
+				// if max distance is 3, call a recursion
+				if (maxDist == 3) {
+					curr_i = furtherRailMove(m, curr->p, 2, arr, curr_i);
+				}
+			}
+		}
+	}
+	return curr_i;
+}
 
-
+// search the array, does the place already exist in array?
+// resturn 1 if it does
+int searchInReachable (PlaceId arr, PlaceId newPlace)
+{
+	int r = 0;
+	for (int i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) {
+		if (arr[i] == newPlace) {
+			r = 1;
+			return r;
+		}
+	}
+	return r;
+}
 
 
 

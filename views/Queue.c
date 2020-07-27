@@ -36,7 +36,7 @@ PlaceId GetVampireLocation (Queue Q)
 		}
 		curr = curr->next;
 	}
-	return NULL;
+	return NOWHERE;
 }
 
 
@@ -133,7 +133,7 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 			curr = curr->next;
 		}	
 	}
-	return NULL; // key not found
+	return NO_TRAP; // location not found
 }
 
 int TrailLength(Queue Q){

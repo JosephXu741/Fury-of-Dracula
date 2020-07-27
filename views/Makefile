@@ -15,26 +15,26 @@ BINS = testGameView testHunterView testDraculaView testMap
 
 all: $(BINS)
 
-testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o Queue.o List.o
-testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.o List.o
+testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o Queue.o
+testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.o
 
-testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o Queue.o List.o
-testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.o List.o
+testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o Queue.o
+testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.o
 
-testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o Queue.o List.o
-testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h List.o
+testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o Queue.o
+testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h .o
 
 testMap: testMap.o Map.o Places.o 
 testMap.o: testMap.c Map.h Places.h
 
-List.o: List.c List.h Trap.h
+ .o:Trap.h
 Queue.o: Queue.c Queue.h Trap.h
 
 Places.o: Places.c Places.h Game.h
 Map.o: Map.c Map.h Places.h Game.h
-GameView.o:	GameView.c GameView.h Game.h Queue.h List.h
-HunterView.o: HunterView.c HunterView.h Game.h Queue.h List.h
-DraculaView.o: DraculaView.c DraculaView.h Game.h Queue.h List.h
+GameView.o:	GameView.c GameView.h Game.h Queue.h
+HunterView.o: HunterView.c HunterView.h Game.h Queue.h
+DraculaView.o: DraculaView.c DraculaView.h Game.h Queue.h
 testUtils.o: testUtils.c Places.h Game.h 
 .PHONY: clean
 clean:

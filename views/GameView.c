@@ -228,7 +228,6 @@ int GvGetHealth(GameView gv, Player player)
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	PlaceId location;
 	if (gv->round == 1) {
 		if (player == gv->Lord_Godalming.id /*&& location is HOSPITAL*/) return gv->Lord_Godalming.place;			
 		if (player == gv->Dr_Seward.id /*&& location is HOSPITAL*/) return gv->Dr_Seward.place;		
@@ -246,8 +245,8 @@ PlaceId GvGetVampireLocation(GameView gv)
 
 PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 {
-	*numTraps = TrapListLength(gv->traps);
-	return getTrapsLocation(gv->trail);
+	*numTraps = TotalTrapsTrail(gv->trail);
+	return getTrapsLocations(gv->trail);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -287,7 +286,8 @@ char *playerToLetter(GameView gv, Player player)
 	if (player == gv->Dr_Seward.id) return "S";		
 	if (player == gv->Van_Helsing.id) return "H";		
 	if (player == gv->Mina_Harker.id) return "M";	
-	if (player == gv->Dracula.id) return "D";
+
+	return "D";
 }
 
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
@@ -321,19 +321,95 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 PlaceId *GvGetLocationHistory(GameView gv, Player player,
                               int *numReturnedLocs, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
+	if (player != PLAYER_DRACULA) {
+		return GvGetMoveHistory(gv, player, numReturnedLocs, canFree);
+	}
+	PlaceId *history;
+	int numLocs = 0;
+	char s[10000];
+    strcpy(s, gv->pastPlays);
+    char *token = strtok(s, " ");
+    while (token != NULL){
+		if (strncmp(token, "D", 1) == 0) {
+			char abbv[3];
+			abbv[0] = token[1];
+			abbv[1] = token[2];
+			abbv[2] = '\0';
+			PlaceId move = placeAbbrevToId(abbv); 
+
+			if(move == HIDE){
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = history[numLocs - 1];
+				numLocs++;
+			} else if (move > HIDE && move < TELEPORT) {
+				int back = move - HIDE;
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = history[numLocs - back];
+				numLocs++;
+			} else if (move == TELEPORT) {
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = CASTLE_DRACULA;
+				numLocs++;
+			} else {
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = move;
+				numLocs++;
+			}
+		}
+		
+		token = strtok(NULL, " ");
+	}		
+
+	*numReturnedLocs = numLocs;
 	*canFree = false;
-	return NULL;
+	return history;
 }
 
 PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
                             int *numReturnedLocs, bool *canFree)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	*numReturnedLocs = 0;
+	if (player != PLAYER_DRACULA) {
+		return GvGetLastMoves(gv, player, numLocs, numReturnedLocs, canFree);
+	}
+	PlaceId *history;
+	int num = 0;
+	char s[10000];
+    strcpy(s, gv->pastPlays);
+    char *token = strtok(s, " ");
+    while (token != NULL && num < numLocs){
+		if (strncmp(token, "D", 1) == 0) {
+			char abbv[3];
+			abbv[0] = token[1];
+			abbv[1] = token[2];
+			abbv[2] = '\0';
+			PlaceId move = placeAbbrevToId(abbv); 
+
+			if(move == HIDE){
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = history[numLocs - 1];
+				numLocs++;
+			} else if (move > HIDE && move < TELEPORT) {
+				int back = move - HIDE;
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = history[numLocs - back];
+				numLocs++;
+			} else if (move == TELEPORT) {
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = CASTLE_DRACULA;
+				numLocs++;
+			} else {
+				history = realloc(history, (numLocs + 1) * sizeof(*history));
+				history[numLocs] = move;
+				numLocs++;
+			}
+		}
+		
+		token = strtok(NULL, " ");
+	}		
+
+	*numReturnedLocs = numLocs;
 	*canFree = false;
-	return 0;
+	return history;
 }
 
 ////////////////////////////////////////////////////////////////////////

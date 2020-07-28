@@ -103,8 +103,8 @@ HunterView HvNew(char *pastPlays, Message messages[])
     new->Mina_Harker.place = GvGetPlayerLocation(new->gv, PLAYER_MINA_HARKER);
 
     new->Dracula.id = PLAYER_DRACULA;
-    new->Dracula.health =  GvGetHealth(new->gvv, PLAYER_DRACULA);
-    new->Dracula.place =  GvGetPlayerLocation(new->gv, PLAYER_DRACULA);
+    new->Dracula.health =  GvGetHealth(gv, PLAYER_DRACULA);
+    new->Dracula.place =  GvGetPlayerLocation(gv, PLAYER_DRACULA);
 
 
 	return new;

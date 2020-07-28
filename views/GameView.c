@@ -120,12 +120,8 @@ GameView GvNew(char *pastPlays, Message messages[])
 			else if (dEncounter[1] == 'V') {
 				TrailJoin(new->trail, IMMATURE_VAMPIRE, new->Dracula.place);
 			}
-			if (TrailLength(new->trail) >= TRAIL_SIZE) {		// if trail size is maxed out, then trail pops for enqueue
-				TrailLeave(new->trail);
-			}
 
-
-			if (dAction != '.') { // trap expired / vampire matured
+			if (dAction != '.') { // trap expired / vampire matured i.e. trail too long
 				TrapId type = TrailLeave(new->trail);
 				if (type == IMMATURE_VAMPIRE) new->score -= SCORE_LOSS_VAMPIRE_MATURES;
 			}

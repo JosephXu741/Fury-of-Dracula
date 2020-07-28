@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "Places.h"
+#include "Game.h"
 
 #ifndef FOD__MAP_H_
 #define FOD__MAP_H_
@@ -53,6 +54,12 @@ ConnList MapGetConnections(Map m, PlaceId p);
 PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType, 
 	Player player, Round round, int *numReturnedLocs,
 	bool road, bool rail, bool boat);
+
+PlaceId *MapGetDraculaReachable (Map m, PlaceId p, int playerType, int *numReturnedLocs,
+	bool road, bool rail, bool boat);
+
+
+
 
 
 #endif // !defined(FOD__MAP_H_)

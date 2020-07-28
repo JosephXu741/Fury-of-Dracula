@@ -42,8 +42,8 @@ static bool connListContains(ConnList l, PlaceId v, TransportType type);
 
 
 // add
-int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId arr, int curr_i, int *numReturnedLocs);
-int searchInReachable (PlaceId arr, PlaceId newPlace);
+int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId *arr, int curr_i, int *numReturnedLocs);
+int searchInReachable (PlaceId *arr, PlaceId newPlace, int length);
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -208,8 +208,8 @@ ConnList MapGetConnections(Map m, PlaceId p)
 
 ////////////////////////////////////////////////////////////////////////
 
-// find the reachable places from the current place
-// given the type of players
+
+
 PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType, 
 	Player player, Round round, int *numReturnedLocs,
 	bool road, bool rail, bool boat)
@@ -221,8 +221,8 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 	arr[0] = p;
 	*numReturnedLocs += 1;
 	
-	// go through connections list (adjacency list), add into arr.
-	ConnList *curr = MapGetConnections(m, p);
+	// go through connections list, add into arr.
+	ConnList curr = MapGetConnections(m, p);
 	int i = 1;
 	while(curr != NULL) {
 		if(curr->type == ROAD && road == true) {
@@ -249,7 +249,7 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 				arr[i] = curr->p;
 				*numReturnedLocs += 1;
 				i++;
-				i = furtherRailMove (m, curr->p, 2, arr, i, numReturnedLocs);
+				i = furtherRailMove (m, curr->p, sum % 4, arr, i, numReturnedLocs);
 			}
 		}
 		curr = curr->next;
@@ -262,22 +262,24 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 // find the reachable rail move when max allowed distance
 // is more than 1
 // return curr_i (use to increment index for array)
-int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId arr, int curr_i, int *numReturnedLocs)
+// if maxDist == 2, search RAIL in current place (which is 2 dist away)
+// if maxDist == 3, go one dist further (which is 3 dist away)
+int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId *arr, int curr_i, int *numReturnedLocs)
 {
-	ConnList *curr = MapGetConnections(m, p);
+	ConnList curr = MapGetConnections(m, p);
 	while(curr != NULL) {
 		if(curr->type == RAIL) {
 
-			// TODO duplication
 			// avoid adding existing places
-			if (searchInReachable(arr, curr->p) == 0) {
+			if (searchInReachable(arr, curr->p, curr_i) == 0) {
 				arr[curr_i] = curr->p;
 				*numReturnedLocs += 1;
 				curr_i++;
 
-				// if max distance is 3, call a recursion
+				// if max distance is 3, call a recursion with maxDist = 2
 				if (maxDist == 3) {
-					curr_i = furtherRailMove(m, curr->p, 2, arr, curr_i);
+					curr_i = furtherRailMove(m, curr->p, maxDist - 1, 
+						arr, curr_i, numReturnedLocs);
 				}
 			}
 		}
@@ -287,10 +289,10 @@ int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId arr, int curr_i, int
 
 // search the array, does the place already exist in array?
 // resturn 1 if it does
-int searchInReachable (PlaceId arr, PlaceId newPlace)
+int searchInReachable (PlaceId *arr, PlaceId newPlace, int length)
 {
 	int r = 0;
-	for (int i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) {
+	for (int i = 0; i < length; i++) {
 		if (arr[i] == newPlace) {
 			r = 1;
 			return r;
@@ -300,5 +302,39 @@ int searchInReachable (PlaceId arr, PlaceId newPlace)
 }
 
 
+PlaceId *MapGetDraculaReachable (Map m, PlaceId p, int playerType, int *numReturnedLocs,
+	bool road, bool rail, bool boat)
+{
+	assert(playerType == DRACULA);
 
+	PlaceId *arr = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	// stay at the same location
+	arr[0] = p;
+	*numReturnedLocs += 1;
+	
+	// go through connections list, add into arr.
+	ConnList curr = MapGetConnections(m, p);
+	int i = 1;
+	while(curr != NULL) {
+
+		// cannot go hospital
+		if (curr->p == ST_JOSEPH_AND_ST_MARY) {
+			continue;
+
+		} else if(curr->type == ROAD && road == true) {
+			arr[i] = curr->p;
+			*numReturnedLocs += 1;
+			i++;
+
+		} else if (curr->type == BOAT && boat == true) {
+			arr[i] = curr->p;
+			*numReturnedLocs += 1;
+			i++;
+		}
+
+		curr = curr->next;
+	}
+	
+	return arr;
+}
 

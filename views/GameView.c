@@ -18,7 +18,7 @@
 #include "Game.h"
 #include "GameView.h"
 #include "Map.h"
-#include "trap.h"
+#include "Trap.h"
 #include "Queue.h"
 #include "Places.h"
 // add your own #includes here
@@ -453,16 +453,15 @@ PlaceId *GvGetReachable(GameView gv, Player player, Round round,
 		player == PLAYER_DR_SEWARD ||
 		player == PLAYER_MINA_HARKER ||
 		player == PLAYER_VAN_HELSING) {
-
-		return *MapGetHunterReachable (gv->map, from, HUNTER, 
+		return MapGetHunterReachable (gv->map, from, HUNTER, 
 			player, round, numReturnedLocs,
 			true, true, true);
 	}
 
-
-	// TODO: MapGetDraculaReachable
-
-
+	if (player == PLAYER_DRACULA) {
+		return MapGetDraculaReachable (gv->map, from, DRACULA, 
+			numReturnedLocs, true, false, true);
+	}
 
 	return NULL;
 }
@@ -473,21 +472,21 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
                               PlaceId from, bool road, bool rail,
                               bool boat, int *numReturnedLocs)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	*numReturnedLocs = 0;
 
 	if (player == PLAYER_LORD_GODALMING ||
 		player == PLAYER_DR_SEWARD ||
 		player == PLAYER_MINA_HARKER ||
 		player == PLAYER_VAN_HELSING) {
-
-		return *MapGetHunterReachable (gv->map, from, HUNTER, 
+		return MapGetHunterReachable (gv->map, from, HUNTER, 
 			player, round, numReturnedLocs,
 			road, rail, boat);
 	}
 
-
-
+	if (player == PLAYER_DRACULA) {
+		return MapGetDraculaReachable (gv->map, from, DRACULA, 
+			numReturnedLocs, road, false, boat);
+	}
 
 	return NULL;
 }

@@ -136,6 +136,15 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 	return NO_TRAP; // location not found
 }
 
+PlaceId getDBTrailPosition(Queue Q, int backtrackNUM) { 	// gets the location that dracula wants to DB to in trail
+	QueueNode *curr = Q->head;
+	int headtotail = 6 - backtrackNUM;
+	for (int i = 1; i < headtotail; i++) {
+		curr = curr->next;
+	}
+	return curr->location;
+}
+
 int TrailLength(Queue Q){
 	int length = 0;
 	for (QueueNode* curr = Q->head; curr != NULL; length++) 

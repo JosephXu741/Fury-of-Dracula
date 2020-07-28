@@ -55,7 +55,7 @@ struct gameView {
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
-	int *numTraps;
+	int numTraps;
 } ;
 
 
@@ -84,9 +84,10 @@ GameView GvNew(char *pastPlays, Message messages[])
 	char s[10000];
     strcpy(s, pastPlays);
     char *token = strtok(s, " ");
+
     while (token != NULL){
-        int cmp = strncmp(token, "D", 1);
-        if (cmp == 0){									// Dracula past moves
+
+        if (token[0] == 'D') {									// Dracula past moves
             char abbv[3];		
             abbv[0] = token[1];
             abbv[1] = token[2];
@@ -99,28 +100,36 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 			char dAction = token[5];
 
-            PlaceId placeid = placeAbbrevToId(abbv); 
-            TrailJoin(new->trail, placeid);
-			if (TrailLength(new->trail) >= TRAIL_SIZE) {
-				TrailLeave(new->trail);
-			}
-			if (abbv == "TP") {
+
+			if (strcmp(abbv,"TP") == 0) {						// TP move
 				new->Dracula.place = CASTLE_DRACULA;
 				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
+			} else if (abbv[0] == 'D') {						// Double Back move
+				int trailposition = abbv[1] - '0';				// convert char to int (atoi doesn't work)
+				PlaceId location = getDBTrailPosition(new->trail, trailposition);
+				new->Dracula.place = location;
+			} else {											// is a place
+				PlaceId placeid = placeAbbrevToId(abbv); 
+				new->Dracula.place = placeid;
 			}
+
+
 			if (dEncounter[0] == 'T') {
 				TrailJoin(new->trail, NORMAL_TRAP, new->Dracula.place);
 			}
 			else if (dEncounter[1] == 'V') {
 				TrailJoin(new->trail, IMMATURE_VAMPIRE, new->Dracula.place);
 			}
+			if (TrailLength(new->trail) >= TRAIL_SIZE) {		// if trail size is maxed out, then trail pops for enqueue
+				TrailLeave(new->trail);
+			}
+
 
 			if (dAction != '.') { // trap expired / vampire matured
 				TrapId type = TrailLeave(new->trail);
 				if (type == IMMATURE_VAMPIRE) new->score -= SCORE_LOSS_VAMPIRE_MATURES;
 			}
-	
-            
+	            
             
         } else {										// Hunter past moves
 			Hunter player;
@@ -133,7 +142,9 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
+
             PlaceId placeid = placeAbbrevToId(abbv); 
+			player.place = placeid;
 
 			char hTrap = token[3];
 			char hVamp = token[4];
@@ -142,22 +153,36 @@ GameView GvNew(char *pastPlays, Message messages[])
 			if (hTrap == 'T') {		
 				TrapRemove(new->trail, player.place);
 				player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
+				if (player.health <= 0) {
+					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+					player.health = GAME_START_HUNTER_LIFE_POINTS;
+					player.place = HOSPITAL_PLACE;
+				}
 			}
-			if (hVamp = 'V') {
-				int trap = TrapRemove(new->trail, player.place);
+			if (hVamp == 'V') {
+				TrapRemove(new->trail, player.place);
 				
 			}
-			if (hDrac = 'D') { // hunter encounters dracula
+			if (hDrac == 'D') { // hunter encounters dracula
 				player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
 				new->Dracula.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+				if (player.health <= 0) {
+					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
+					player.health = GAME_START_HUNTER_LIFE_POINTS;
+					player.place = HOSPITAL_PLACE;
+				}
 			}
             
         }
 		total_turns++;
+		new->turn = total_turns % NUM_PLAYERS+1;				// whose turn is it currently
         token = strtok(NULL, " ");
     }
 	new->round = total_turns/NUM_PLAYERS;
 	new->numTraps = TotalTrapsTrail(new->trail);
+	if (new->Dracula.health <= 0) {
+		//return 0?
+	}
 	
 	return new;
 }
@@ -178,7 +203,7 @@ Round GvGetRound(GameView gv)
 
 Player GvGetPlayer(GameView gv)
 {
-	int player = gv->turn % 6;			//mod 6????????
+	int player = gv->turn;		
 	switch(player) {
 		case 0 :
 			player = PLAYER_LORD_GODALMING;
@@ -228,13 +253,21 @@ int GvGetHealth(GameView gv, Player player)
 
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
-	if (gv->round == 1) {
-		if (player == gv->Lord_Godalming.id /*&& location is HOSPITAL*/) return gv->Lord_Godalming.place;			
-		if (player == gv->Dr_Seward.id /*&& location is HOSPITAL*/) return gv->Dr_Seward.place;		
-		if (player == gv->Van_Helsing.id /*&& location is HOSPITAL*/) return gv->Van_Helsing.place;		
-		if (player == gv->Mina_Harker.id /*&& location is HOSPITAL*/) return gv->Mina_Harker.place;	
-	    if (player == gv->Dracula.id /*&& location is CASTLE/*/) return gv->Dracula.place;	
+
+	if (gv->round == 0) {
+		if (player == gv->Lord_Godalming.id && gv->Lord_Godalming.place == HOSPITAL_PLACE) return NOWHERE;			
+		if (player == gv->Dr_Seward.id && gv->Dr_Seward.place == HOSPITAL_PLACE) return NOWHERE;		
+		if (player == gv->Van_Helsing.id && gv->Van_Helsing.place == HOSPITAL_PLACE) return NOWHERE;	
+		if (player == gv->Mina_Harker.id && gv->Mina_Harker.place == HOSPITAL_PLACE) return NOWHERE;	
+	    if (player == gv->Dracula.id && gv->Dracula.place == CASTLE_DRACULA) return NOWHERE;	
 	}	
+	else {
+		if (player == gv->Lord_Godalming.id) return gv->Lord_Godalming.place;			
+		if (player == gv->Dr_Seward.id) return gv->Dr_Seward.place;		
+		if (player == gv->Van_Helsing.id) return gv->Van_Helsing.place;	
+		if (player == gv->Mina_Harker.id) return gv->Mina_Harker.place;	
+	    if (player == gv->Dracula.id) return gv->Dracula.place;	
+	}
 	return NOWHERE;
 }
 

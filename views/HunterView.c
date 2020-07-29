@@ -156,22 +156,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	PlaceId current = GvGetPlayerLocation(hv->gv, hunter); // get the number of curernt location.
-	PlaceId tmp = dest;// tmp ID
-	int num = 1;
-	while (hv->shortest_arry[hunter][tmp] != curernt) {
-		num++;
-		tmp = hv->shortest_arry[hunter][tmp];
-	}
-	tmp = dest;
-	PlaceId *path_new = malloc(sizeof(PlaceId) * count);// allocate memory
-	path_new[num - 1] = tmp; // insert the smallest path into the array
-	for (int a = 2; a <= num; a++) {
-		path_new[num - a] = hv->shortest_arry[hunter][tmp];
-		tmp = hv->shortest_arry[hunter][tmp];
-	}
-	*pathLength = num;
-	return path_new;
+	return 0
 }
 
 ////////////////////////////////////////////////////////////////////////

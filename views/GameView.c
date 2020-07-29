@@ -250,21 +250,13 @@ int GvGetHealth(GameView gv, Player player)
 PlaceId GvGetPlayerLocation(GameView gv, Player player)
 {
 
-	if (gv->round == 0) {
-		if (player == gv->Lord_Godalming.id && gv->Lord_Godalming.place == HOSPITAL_PLACE) return NOWHERE;			
-		if (player == gv->Dr_Seward.id && gv->Dr_Seward.place == HOSPITAL_PLACE) return NOWHERE;		
-		if (player == gv->Van_Helsing.id && gv->Van_Helsing.place == HOSPITAL_PLACE) return NOWHERE;	
-		if (player == gv->Mina_Harker.id && gv->Mina_Harker.place == HOSPITAL_PLACE) return NOWHERE;	
-	    if (player == gv->Dracula.id && gv->Dracula.place == CASTLE_DRACULA) return NOWHERE;	
-	}	
-	else {
-		if (player == gv->Lord_Godalming.id) return gv->Lord_Godalming.place;			
-		if (player == gv->Dr_Seward.id) return gv->Dr_Seward.place;		
-		if (player == gv->Van_Helsing.id) return gv->Van_Helsing.place;	
-		if (player == gv->Mina_Harker.id) return gv->Mina_Harker.place;	
-	    if (player == gv->Dracula.id) return gv->Dracula.place;	
-	}
-	return NOWHERE;
+	if (player == gv->Lord_Godalming.id) return gv->Lord_Godalming.place;			
+	if (player == gv->Dr_Seward.id) return gv->Dr_Seward.place;		
+	if (player == gv->Van_Helsing.id) return gv->Van_Helsing.place;	
+	if (player == gv->Mina_Harker.id) return gv->Mina_Harker.place;	
+
+	return gv->Dracula.place;	
+
 }
 
 PlaceId GvGetVampireLocation(GameView gv)

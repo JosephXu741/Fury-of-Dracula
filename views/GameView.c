@@ -26,6 +26,7 @@
 #define ALL_TRAPS 0
 #define HUNTER 		100
 #define DRACULA 	200
+#define MAX_HUNTER_HEALTH 9
 
 
 // TODO: ADD YOUR OWN STRUCTS HERE
@@ -35,12 +36,7 @@ typedef struct hunter {
 	PlaceId place;
 } Hunter;
 
-typedef struct dracula {
-	int id;
-	int health;
-	PlaceId place;
-} Dracula;
-
+typedef Hunter Dracula;
 
 struct gameView {
 	char *pastPlays;
@@ -53,7 +49,6 @@ struct gameView {
 	Hunter Van_Helsing;
 	Hunter Mina_Harker;
 	Dracula Dracula;
-	int numTraps;
 };
 
 
@@ -68,7 +63,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-	new->turn = 0;
+	new->turn = 1;
 	new->trail = newTrail();
 	new->map = MapNew();
 	new->score = GAME_START_SCORE;
@@ -104,6 +99,7 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
+			PlaceId place = placeAbbrevToId(abbv); 
 
 			char dEncounter[3];
 			dEncounter[0] = token[3];
@@ -113,23 +109,22 @@ GameView GvNew(char *pastPlays, Message messages[])
 			char dAction = token[5];
 
 
-			if (strcmp(abbv,"TP") == 0) {						// TP move
+			if (place == TELEPORT) {						// TP move
 				new->Dracula.place = CASTLE_DRACULA;
 				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
-			} else if (abbv[0] == 'D') {						// Double Back move
-				int trailposition = abbv[1] - '0';				// convert char to int (atoi doesn't work)
+			} else if (place >= DOUBLE_BACK_1 && place <= DOUBLE_BACK_5) {						// Double Back move
+				int trailposition = place - HIDE;
 				PlaceId location = getDBTrailPosition(new->trail, trailposition);
 				new->Dracula.place = location;
-			} else {											// is a place
-				PlaceId placeid = placeAbbrevToId(abbv); 
-				new->Dracula.place = placeid;
+			} else if (place != HIDE) {											// is a place
+				new->Dracula.place = place;
 			}
 
 
 			if (dEncounter[0] == 'T') {
 				TrailJoin(new->trail, NORMAL_TRAP, new->Dracula.place);
 			}
-			else if (dEncounter[1] == 'V') {
+			if (dEncounter[1] == 'V') {
 				TrailJoin(new->trail, IMMATURE_VAMPIRE, new->Dracula.place);
 			}
 
@@ -152,47 +147,60 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[2] = '\0';
 
             PlaceId placeid = placeAbbrevToId(abbv); 
+
+			if (placeid == player.place){
+				player.health += LIFE_GAIN_REST;
+				if (player.health > MAX_HUNTER_HEALTH) {
+					player.health = MAX_HUNTER_HEALTH;
+				} 
+			}
 			player.place = placeid;	
 
-			char hTrap = token[3];
-			char hVamp = token[4];
-			char hDrac = token[5];
+			if (player.health == 0) {
+				player.health = GAME_START_HUNTER_LIFE_POINTS;
+			}
 
-			if (hTrap == 'T') {		
-				TrapRemove(new->trail, player.place);
-				player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
+			char event[5];
+			event[0] = token[3];
+			event[1] = token[4];
+			event[2] = token[5];
+			event[3] = token[6];
+			event[4] = '\0';
+
+			for (int i = 0; event[i]; i++){
+				if (event[i] == 'T') {
+					TrapRemove(new->trail, player.place);
+					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
+				} else if (event[i] == 'V') {
+					TrapRemove(new->trail, player.place);
+					new->score -= SCORE_LOSS_VAMPIRE_MATURES;
+				} else if (event[i] == 'D') {
+					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;
+					player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+				}
+
 				if (player.health <= 0) {
-					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-					player.health = GAME_START_HUNTER_LIFE_POINTS;
 					player.place = HOSPITAL_PLACE;
+					player.health = 0;
+					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
 				}
 			}
-			if (hVamp == 'V') {
-				TrapRemove(new->trail, player.place);
-				
-			}
-			if (hDrac == 'D') { // hunter encounters dracula
-				player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
-				new->Dracula.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
-				if (player.health <= 0) {
-					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
-					player.health = GAME_START_HUNTER_LIFE_POINTS;
-					player.place = HOSPITAL_PLACE;
-				}
-			}
+
             
         }
+
 		new->turn++;			// whose turn is it currently
         token = strtok(NULL, " ");
     }
-	new->numTraps = TotalTrapsTrail(new->trail);
-
+	int minus = new->turn / 5;
+	new->score -= minus;
 	return new;
 }
 
 void GvFree(GameView gv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
+	dropTrail(gv->trail);
+	MapFree(gv->map);
 	free(gv);
 }
 
@@ -207,20 +215,20 @@ Round GvGetRound(GameView gv)
 Player GvGetPlayer(GameView gv)
 {
 	int player = gv->turn;		
-	switch(player) {
-		case 0 :
+	switch(player % 5) {
+		case 1 :
 			player = PLAYER_LORD_GODALMING;
 			break;
-		case 1 :
+		case 2 :
 			player = PLAYER_DR_SEWARD;
 			break;
-		case 2 :
+		case 3 :
 			player = PLAYER_VAN_HELSING;
 			break;
-		case 3 :
+		case 4 :
 			player = PLAYER_MINA_HARKER;
 			break;
-		case 4 :
+		case 0 :
 			player = PLAYER_DRACULA;
 			break;
 		default :

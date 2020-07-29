@@ -1,4 +1,4 @@
-#ifndef QUEUE_H
+
 #define QUEUE_H
 
 #include "Trap.h"
@@ -20,4 +20,3 @@ int TrailIsEmpty(Queue); // check for no items
 int TrailLength(Queue Q);
 int TotalTrapsTrail(Queue Q);
 
-#endif

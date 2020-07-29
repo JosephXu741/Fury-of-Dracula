@@ -95,6 +95,7 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
+			
 
 			char dEncounter[3];
 			dEncounter[0] = token[3];

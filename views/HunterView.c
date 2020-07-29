@@ -56,7 +56,7 @@ HunterView HvNew(char *pastPlays, Message messages[])
 	//Initialize the shortest_path array
     for (int a = 0; a < NUM_PLAYERS - 1; a++) {
 		//new->shortest_arry[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a), this function messes with the makefile ?????
-		    GvGetRound(new->gv),a);
+		    GvGetRound(new->gv);
 	} 
 
 

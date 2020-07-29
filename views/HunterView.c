@@ -140,7 +140,7 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 			if(gethistory[i] != CITY_UNKNOWN && gethistory[i] != SEA_UNKNOWN && 
 			    gethistory[i] != CASTLE_DRACULA){
 				where = gethistory[i];
-				*round = i??
+				*round = i;
 				break;
 			}
 	}

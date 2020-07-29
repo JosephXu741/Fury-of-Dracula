@@ -51,11 +51,6 @@ struct hunterView {
 	Map map;
 	int score;
 	Round round;
-    Hunter Lord_Godalming;
-	Hunter Dr_Seward;
-	Hunter Van_Helsing;
-	Hunter Mina_Harker;
-	Dracula Dracula;
 	int *numReturnedMoves;
 	int *shortest_arry[NUM_PLAYERS - 1];
 
@@ -84,27 +79,6 @@ HunterView HvNew(char *pastPlays, Message messages[])
 		new->hShortestP[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a),
 		    GvGetRound(new->gv),a);
 	} 
-
-
-    new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
-	new->Lord_Godalming.health = GvGetHealth(new->gv, PLAYER_LORD_GODALMING);
-	new->Lord_Godalming.place = GvGetPlayerLocation(new->gv, PLAYER_LORD_GODALMING);
-
-	new->Dr_Seward.id = PLAYER_DR_SEWARD;
-    new->Dr_Seward.health = GvGetHealth(new->gv, PLAYER_DR_SEWARD);
-    new->Dr_Seward.place = GvGetPlayerLocation(new->gv, PLAYER_DR_SEWARD);
-
-    new->Van_Helsing.id = PLAYER_VAN_HELSING;
-    new->Van_Helsing.health = GvGetHealth(new->gv, PLAYER_VAN_HELSING);
-    new->Van_Helsing.place = GvGetPlayerLocation(new->gv, PLAYER_VAN_HELSING);
-
-    new->Mina_Harker.id = PLAYER_MINA_HARKER;
-    new->Mina_Harker.health = GvGetHealth(new->gv, PLAYER_MINA_HARKER);
-    new->Mina_Harker.place = GvGetPlayerLocation(new->gv, PLAYER_MINA_HARKER);
-
-    new->Dracula.id = PLAYER_DRACULA;
-    new->Dracula.health =  GvGetHealth(new->gvv, PLAYER_DRACULA);
-    new->Dracula.place =  GvGetPlayerLocation(new->gv, PLAYER_DRACULA);
 
 
 	return new;
@@ -241,7 +215,6 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
 {
 	// TODO If Dracula's current location is not revealed, the
  	// * function should set *numReturnedLocs to 0 and return NULL.
-	
 	*numReturnedLocs = 0;
 	return GvGetReachableByType(hv->gv, player, GvGetRound(hv->gv),
             	GvGetPlayerLocation(hv->gv, player), 

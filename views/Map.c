@@ -343,34 +343,46 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 	// stay at the same location: rest
 	arr[0] = p;
 	*numReturnedLocs += 1;
+	printf("%d\n", arr[0]);
 	
 	// go through connections list, add into arr.
 	ConnList curr = MapGetConnections(m, p);
 	int i = 1;
 	while(curr != NULL) {
+		// Firstly: make sure place is unique
+		if (searchInReachable(arr, curr->p, i)) {
+			curr = curr->next;
+			continue;
+		}
+
 		if(curr->type == ROAD && road == true) {
 			arr[i] = curr->p;
 			*numReturnedLocs += 1;
+			printf("%d\n", arr[i]);
 			i++;
 
 		} else if (curr->type == BOAT && boat == true) {
 			arr[i] = curr->p;
 			*numReturnedLocs += 1;
+			printf("%d\n", arr[i]);
 			i++;
 		
 		} else if(curr->type == RAIL && rail == true) {
 			int sum = round + player;
 			if(sum % 4 == 0) {
+				curr = curr->next;
 				continue;
 
 			} else if(sum % 4 == 1) {
 				arr[i] = curr->p;
 				*numReturnedLocs += 1;
+				printf("%d\n", arr[i]);
 				i++;
 
 			} else if(sum % 4 == 2 || sum % 4 == 3) {
 				arr[i] = curr->p;
 				*numReturnedLocs += 1;
+				printf("%d\n", arr[i]);
 				i++;
 				i = furtherRailMove (m, curr->p, sum % 4, arr, i, numReturnedLocs);
 			}

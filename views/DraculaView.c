@@ -22,13 +22,11 @@
 #include "Places.h"
 
 // add your own #includes here
-#define PREMATURE_VAMPIRE 0
-#define REGULAR_TRAP	  1
+
 
 
 struct draculaView {
 	char *pastPlays;
-	Message messages;
 	GameView gv;
 	Map map;
 } ;
@@ -45,7 +43,6 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	}
 	new->gv = GvNew(pastPlays, messages);
 	new->pastPlays = pastPlays;
-	strcpy(new->messages, messages);
 	new->map = MapNew();
 
 	return new;
@@ -115,7 +112,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 			db = 1;
 		}
 	}
-	if (hide = 0) {
+	if (hide == 0) {
 		new = realloc(new, (newSize + 1) * sizeof(*new));
 		new[newSize] = HIDE;
 		newSize++;
@@ -170,7 +167,7 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 			db = 1;
 		}
 	}
-	if (hide = 0) {
+	if (hide == 0) {
 		new = realloc(new, (newSize + 1) * sizeof(*new));
 		new[newSize] = HIDE;
 		newSize++;
@@ -229,7 +226,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 			db = 1;
 		}
 	}
-	if (hide = 0) {
+	if (hide == 0) {
 		new = realloc(new, (newSize + 1) * sizeof(*new));
 		new[newSize] = HIDE;
 		newSize++;

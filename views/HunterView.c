@@ -28,30 +28,11 @@
 #define REGULAR_TRAP	  1
 
 
-// TODO: ADD YOUR OWN STRUCTS HERE
-typedef struct hunter {
-	int id;
-	int health;
-	Place place;
-	PlaceId *moveHistory;
-} Hunter;
-
-typedef struct dracula {
-	int id;
-	int health;
-	Place place;
-	PlaceId *moveHistory;
-} Dracula;
-
-
-
 struct hunterView {
-	// TODO: ADD FIELDS HERE
 	GameView gv;
 	Map map;
 	int score;
 	Round round;
-	int *numReturnedMoves;
 	int *shortest_arry[NUM_PLAYERS - 1];
 
 };
@@ -61,7 +42,6 @@ struct hunterView {
 
 HunterView HvNew(char *pastPlays, Message messages[])
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	HunterView new = malloc(sizeof(*new));
 	if (new == NULL) {
 		fprintf(stderr, "Couldn't allocate HunterView!\n");
@@ -72,11 +52,10 @@ HunterView HvNew(char *pastPlays, Message messages[])
 	new->map = MapNew();
 	new->score = GvGetScore(new->gv);
 	new->round = GvGetRound(new->gv);
-	new->numReturnedMoves = 0;
 
 	//Initialize the shortest_path array
     for (int a = 0; a < NUM_PLAYERS - 1; a++) {
-		new->hShortestP[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a),
+		new->shortest_arry[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a),
 		    GvGetRound(new->gv),a);
 	} 
 
@@ -86,7 +65,6 @@ HunterView HvNew(char *pastPlays, Message messages[])
 
 void HvFree(HunterView hv)
 {
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
 	for (int i = 0; i < NUM_PLAYERS - 1; i++) {
 		free(hv->shortest_arry[i]);
 	} //  free the shortestpath array
@@ -103,7 +81,6 @@ Round HvGetRound(HunterView hv)
 
 Player HvGetPlayer(HunterView hv)
 {
-	// TODO implment GvGetPlayer in gv
 	return GvGetPlayer(hv->gv);
 }
 
@@ -133,30 +110,23 @@ PlaceId HvGetVampireLocation(HunterView hv)
 PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 {
 	bool freec = false;
-	int Returned = 0 ;
+	int Returned = 0;
+	Round curr_round = GvGetRound(hv->gv);
 	PlaceId *gethistory = GvGetMoveHistory(hv->gv,PLAYER_DRACULA,&Returned,&freec);
-	PlaceId where = NOWHERE;
-	for(int i = 0;i < Returned;i++){
-			if(gethistory[i] != CITY_UNKNOWN && gethistory[i] != SEA_UNKNOWN && 
-			    gethistory[i] != CASTLE_DRACULA){
-				where = gethistory[i];
-				*round = i??
-				break;
-			}
+	for(int i = Returned; i >= 0; i--){
+		if(gethistory[i] != CITY_UNKNOWN && gethistory[i] != SEA_UNKNOWN){
+			return gethistory[i];
+		}
+		curr_round--;
 	}
-	if(freec == true){
-		free(moveget);
-	}
-
-
-	// TODO: REPLACE THIS WITH YOUR OWN IMPLEMENTATION
-	return where;
+	*(round) = curr_round;
+	return NOWHERE;
 }
 
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	return 0
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -164,8 +134,6 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 
 PlaceId *HvWhereCanIGo(HunterView hv, int *numReturnedLocs)
 {
-	
-	*numReturnedLocs = 0;
 	return GvGetReachable(hv->gv, GvGetPlayer(hv->gv), GvGetRound(hv->gv),
             	GvGetPlayerLocation(hv->gv, GvGetPlayer(hv->gv)), numReturnedLocs);
 }

@@ -54,8 +54,8 @@ ConnList MapGetConnections(Map m, PlaceId p);
 
 
 int *MapGetShortestPath(PlaceId where, int round, int player);
-static void Find_railway(int num_Steps, int lL, ConnList link_Vertex, 
-    Map g, int *total_length, int *st_path, int *visited, Queue newQueue);
+//static void Find_railway(int num_Steps, int lL, ConnList link_Vertex, 
+//    Map g, int *total_length, int *st_path, int *visited, Queue newQueue);
 
 PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType, 
 	Player player, Round round, int *numReturnedLocs,

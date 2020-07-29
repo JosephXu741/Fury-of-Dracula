@@ -140,7 +140,7 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[2] = '\0';
 
             PlaceId placeid = placeAbbrevToId(abbv); 
-			player.place = placeid;
+			player.place = placeid;	
 
 			char hTrap = token[3];
 			char hVamp = token[4];
@@ -176,10 +176,7 @@ GameView GvNew(char *pastPlays, Message messages[])
     }
 	new->round = total_turns/NUM_PLAYERS;
 	new->numTraps = TotalTrapsTrail(new->trail);
-	if (new->Dracula.health <= 0) {
-		//return 0?
-	}
-	
+
 	return new;
 }
 

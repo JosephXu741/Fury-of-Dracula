@@ -19,10 +19,10 @@ testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o Queue.o
 testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.h Trap.h
 
 testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o Queue.o QueueOriginal.o
-testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h QueueOriginal.h
+testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h
 
 testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o Queue.o
-testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h 
+testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h
 
 testMap: testMap.o Map.o Places.o QueueOriginal.o
 testMap.o: testMap.c Map.h Places.h QueueOriginal.h Item.h

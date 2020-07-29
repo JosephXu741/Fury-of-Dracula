@@ -21,7 +21,6 @@
 #include "Game.h"
 #include "Places.h"
 #include "Queue.h"
-#include "List.h"
 
 typedef struct draculaView *DraculaView;
 

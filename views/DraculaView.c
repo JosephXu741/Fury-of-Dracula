@@ -103,7 +103,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
-	PlaceId *new;
+	PlaceId *new = malloc(sizeof(int));
 	for (int i = 0; last_moves[i]; i++){
 		if (last_moves[i] == HIDE){
 			hide = 1;
@@ -158,7 +158,7 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
-	PlaceId *new;
+	PlaceId *new = malloc(sizeof(int));
 	for (int i = 0; last_moves[i]; i++){
 		if (last_moves[i] == GvGetPlayerLocation(dv->gv, PLAYER_DRACULA)){
 			hide = 1;
@@ -217,7 +217,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
-	PlaceId *new;
+	PlaceId *new = malloc(sizeof(int));
 	for (int i = 0; last_moves[i]; i++){
 		if (last_moves[i] == GvGetPlayerLocation(dv->gv, PLAYER_DRACULA)){
 			hide = 1;
@@ -270,7 +270,7 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
 	}
 
 	int newSize = 0;
-	PlaceId *new;
+	PlaceId *new = malloc(sizeof(int));
 	for (Player p = 0; p < 4; p++) {
 		PlaceId location = DvGetPlayerLocation(dv, p);
 		PlaceId *reachable = GvGetReachable(dv->gv, p, GvGetRound(dv->gv), location, numReturnedLocs);
@@ -308,7 +308,7 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
 		return NULL;
 	}
 	int newSize = 0;
-	PlaceId *new;
+	PlaceId *new = malloc(sizeof(int));
 	for (Player p = 0; p < 4; p++) {
 		PlaceId location = DvGetPlayerLocation(dv, p);
 		PlaceId *reachable = GvGetReachableByType(dv->gv, p, GvGetRound(dv->gv), location, road, rail, boat, numReturnedLocs);

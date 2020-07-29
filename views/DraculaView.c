@@ -20,8 +20,7 @@
 #include "GameView.h"
 #include "Map.h"
 #include "Places.h"
-#include "Queue.h"
-#include "Trap.h"
+
 // add your own #includes here
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
@@ -78,28 +77,18 @@ int DvGetHealth(DraculaView dv, Player player)
 
 PlaceId DvGetPlayerLocation(DraculaView dv, Player player)
 {
-	PlaceId location;
-	if (dv->round == 1) {
-		if (player == dv->Lord_Godalming.id /*&& location is HOSPITAL*/) return dv->Lord_Godalming.place;			
-		if (player == dv->Dr_Seward.id /*&& location is HOSPITAL*/) return dv->Dr_Seward.place;		
-		if (player == dv->Van_Helsing.id /*&& location is HOSPITAL*/) return dv->Van_Helsing.place;		
-		if (player == dv->Mina_Harker.id /*&& location is HOSPITAL*/) return dv->Mina_Harker.place;	
-	    if (player == dv->Dracula.id /*&& location is CASTLE/*/) return dv->Dracula.place;	
-	}	
-	return NOWHERE;
-
+	return GvGetPlayerLocation(dv->gv, player);
 }
 
 
 PlaceId DvGetVampireLocation(DraculaView dv)
 {
-	return dv->vampLoc;
+	return GvGetVampireLocation(dv->gv);
 }
 
 PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 {
-	*numTraps = dv->numTraps;
-	return dv->trapLocations;
+	return GvGetTrapLocations(dv->gv, numTraps);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -107,14 +96,13 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
-	if (dv->round == 0){
+	if (GvGetPlayerLocation(dv->gv, PLAYER_DRACULA) == NOWHERE){
 		*numReturnedMoves = 0;
 		return NULL;
 	}
 
-	GameView gv = GvNew(dv->pastPlays, dv->messages);
-	PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, numReturnedMoves);
-	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedMoves, false);
+	PlaceId *reachable = GvGetReachable(dv->gv, PLAYER_DRACULA, GvGetRound(dv->gv), GvGetPlayerLocation(dv->gv, PLAYER_DRACULA), numReturnedMoves);
+	PlaceId *last_moves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedMoves, false);
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
@@ -164,19 +152,18 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 
 PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 {
-	if (dv->round == 0){
+	if (GvGetPlayerLocation(dv->gv, PLAYER_DRACULA) == NOWHERE){
 		*numReturnedLocs = 0;
 		return NULL;
 	}
-	GameView gv = GvNew(dv->pastPlays, dv->messages);
-	PlaceId *reachable = GvGetReachable(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, numReturnedLocs);
-	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
+	PlaceId *reachable = GvGetReachable(dv->gv, PLAYER_DRACULA, GvGetRound(dv->gv), GvGetPlayerLocation(dv->gv, PLAYER_DRACULA), numReturnedLocs);
+	PlaceId *last_moves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
 	PlaceId *new;
 	for (int i = 0; last_moves[i]; i++){
-		if (last_moves[i] == dv->Dracula.place){
+		if (last_moves[i] == GvGetPlayerLocation(dv->gv, PLAYER_DRACULA)){
 			hide = 1;
 		}
 		if (last_moves[i] >= DOUBLE_BACK_1 && last_moves[i] <= DOUBLE_BACK_5){
@@ -224,19 +211,18 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
                              int *numReturnedLocs)
 {
 	
-	if (dv->round == 0){
+	if (GvGetPlayerLocation(dv->gv, PLAYER_DRACULA) == NOWHERE){
 		*numReturnedLocs = 0;
 		return NULL;
 	}
-	GameView gv = GvNew(dv->pastPlays, dv->messages);
-	PlaceId *reachable = GvGetReachableByType(gv, PLAYER_DRACULA, dv->round, dv->Dracula.place, road, false, boat, numReturnedLocs);
-	PlaceId *last_moves = GvGetLastMoves(gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
+	PlaceId *reachable = GvGetReachableByType(dv->gv, PLAYER_DRACULA, GvGetRound(dv->gv), GvGetPlayerLocation(dv->gv, PLAYER_DRACULA), road, false, boat, numReturnedLocs);
+	PlaceId *last_moves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
 	PlaceId *new;
 	for (int i = 0; last_moves[i]; i++){
-		if (last_moves[i] == dv->Dracula.place){
+		if (last_moves[i] == GvGetPlayerLocation(dv->gv, PLAYER_DRACULA)){
 			hide = 1;
 		}
 		if (last_moves[i] >= DOUBLE_BACK_1 && last_moves[i] <= DOUBLE_BACK_5){
@@ -281,14 +267,16 @@ PlaceId *DvWhereCanTheyGo(DraculaView dv, Player player,
                           int *numReturnedLocs)
 {
 
-	// Implement something that detects if the player has had their turn yet
+	if (GvGetPlayerLocation(dv->gv, player) == NOWHERE){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 
-	GameView gv = GvNew(dv->pastPlays, dv->messages);
 	int newSize = 0;
 	PlaceId *new;
 	for (Player p = 0; p < 4; p++) {
 		PlaceId location = DvGetPlayerLocation(dv, p);
-		PlaceId *reachable = GvGetReachable(gv, p, dv->round, location, numReturnedLocs);
+		PlaceId *reachable = GvGetReachable(dv->gv, p, GvGetRound(dv->gv), location, numReturnedLocs);
 
 		for (int i = 0; reachable[i]; i++){
 			int dupe = 0;
@@ -318,14 +306,15 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
                                 int *numReturnedLocs)
 {
 
-	// Implement something that detects if the player has had their turn yet
-
-	GameView gv = GvNew(dv->pastPlays, dv->messages);
+	if (GvGetPlayerLocation(dv->gv, player) == NOWHERE){
+		*numReturnedLocs = 0;
+		return NULL;
+	}
 	int newSize = 0;
 	PlaceId *new;
 	for (Player p = 0; p < 4; p++) {
 		PlaceId location = DvGetPlayerLocation(dv, p);
-		PlaceId *reachable = GvGetReachableByType(gv, p, dv->round, location, road, rail, boat, numReturnedLocs);
+		PlaceId *reachable = GvGetReachableByType(dv->gv, p, GvGetRound(dv->gv), location, road, rail, boat, numReturnedLocs);
 
 		for (int i = 0; reachable[i]; i++){
 			int dupe = 0;

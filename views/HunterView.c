@@ -21,8 +21,8 @@
 #include "Places.h"
 
 // add your own #includes here
-#include "Trap.h"
-#include "Queue.h"
+#include "Item.h"
+#include "QueueOriginal.h"
 
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
@@ -55,7 +55,7 @@ HunterView HvNew(char *pastPlays, Message messages[])
 
 	//Initialize the shortest_path array
     for (int a = 0; a < NUM_PLAYERS - 1; a++) {
-		new->shortest_arry[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a),
+		//new->shortest_arry[a] = MapGetShortestPath(GvGetPlayerLocation(new->gv, a), this function messes with the makefile ?????
 		    GvGetRound(new->gv),a);
 	} 
 

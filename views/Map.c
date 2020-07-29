@@ -343,7 +343,7 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 	// stay at the same location: rest
 	arr[0] = p;
 	*numReturnedLocs += 1;
-	printf("%d\n", arr[0]);
+	//printf("%d\n", arr[0]);
 	
 	// go through connections list, add into arr.
 	ConnList curr = MapGetConnections(m, p);
@@ -358,13 +358,11 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 		if(curr->type == ROAD && road == true) {
 			arr[i] = curr->p;
 			*numReturnedLocs += 1;
-			printf("%d\n", arr[i]);
 			i++;
 
 		} else if (curr->type == BOAT && boat == true) {
 			arr[i] = curr->p;
 			*numReturnedLocs += 1;
-			printf("%d\n", arr[i]);
 			i++;
 		
 		} else if(curr->type == RAIL && rail == true) {
@@ -376,13 +374,11 @@ PlaceId *MapGetHunterReachable (Map m, PlaceId p, int playerType,
 			} else if(sum % 4 == 1) {
 				arr[i] = curr->p;
 				*numReturnedLocs += 1;
-				printf("%d\n", arr[i]);
 				i++;
 
 			} else if(sum % 4 == 2 || sum % 4 == 3) {
 				arr[i] = curr->p;
 				*numReturnedLocs += 1;
-				printf("%d\n", arr[i]);
 				i++;
 				i = furtherRailMove (m, curr->p, sum % 4, arr, i, numReturnedLocs);
 			}
@@ -418,6 +414,7 @@ int furtherRailMove (Map m, PlaceId p, int maxDist, PlaceId *arr, int curr_i, in
 				}
 			}
 		}
+		curr = curr->next;
 	}
 	return curr_i;
 }
@@ -454,6 +451,7 @@ PlaceId *MapGetDraculaReachable (Map m, PlaceId p, int playerType, int *numRetur
 
 		// cannot go hospital
 		if (curr->p == ST_JOSEPH_AND_ST_MARY) {
+			curr = curr->next;
 			continue;
 
 		} else if(curr->type == ROAD && road == true) {

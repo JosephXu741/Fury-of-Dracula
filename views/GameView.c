@@ -68,7 +68,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-	int total_turns = 0;
+	new->turn = 0;
 	new->trail = newTrail();
 	new->map = MapNew();
 	new->score = GAME_START_SCORE;
@@ -173,11 +173,9 @@ GameView GvNew(char *pastPlays, Message messages[])
 			}
             
         }
-		total_turns++;
-		new->turn = total_turns % NUM_PLAYERS+1;				// whose turn is it currently
+		new->turn++;			// whose turn is it currently
         token = strtok(NULL, " ");
     }
-	new->round = total_turns/NUM_PLAYERS;
 	new->numTraps = TotalTrapsTrail(new->trail);
 
 	return new;
@@ -194,7 +192,7 @@ void GvFree(GameView gv)
 
 Round GvGetRound(GameView gv)
 {
-	return gv->round;
+	return gv->turn / 5;
 }
 
 Player GvGetPlayer(GameView gv)

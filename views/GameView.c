@@ -78,6 +78,15 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
 	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
 	new->Dracula.health = GAME_START_BLOOD_POINTS;
+
+
+	new->Lord_Godalming.id = PLAYER_LORD_GODALMING;
+	new->Dr_Seward.id = PLAYER_DR_SEWARD;
+	new->Van_Helsing.id = PLAYER_VAN_HELSING;
+	new->Mina_Harker.id = PLAYER_MINA_HARKER;
+	new->Dracula.id = PLAYER_DRACULA;
+	
+
 	new->Lord_Godalming.place = NOWHERE;
 	new->Dr_Seward.place = NOWHERE;
 	new->Van_Helsing.place = NOWHERE;

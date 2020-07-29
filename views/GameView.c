@@ -44,11 +44,9 @@ typedef struct dracula {
 
 struct gameView {
 	char *pastPlays;
-	Message message;
 	Map map;
 	int score;
 	int turn;
-	Round round;
 	Trail trail;		// a queue of all dracula's trails and traps
 	Hunter Lord_Godalming;
 	Hunter Dr_Seward;
@@ -56,7 +54,7 @@ struct gameView {
 	Hunter Mina_Harker;
 	Dracula Dracula;
 	int numTraps;
-} ;
+};
 
 
 char *playerToLetter(GameView gv, Player player);
@@ -80,6 +78,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 	new->Van_Helsing.health = GAME_START_HUNTER_LIFE_POINTS;
 	new->Mina_Harker.health = GAME_START_HUNTER_LIFE_POINTS;
 	new->Dracula.health = GAME_START_BLOOD_POINTS;
+	new->Lord_Godalming.place = NOWHERE;
+	new->Dr_Seward.place = NOWHERE;
+	new->Van_Helsing.place = NOWHERE;
+	new->Mina_Harker.place = NOWHERE;
+	new->Dracula.place = NOWHERE;
 
 	char s[10000];
     strcpy(s, pastPlays);

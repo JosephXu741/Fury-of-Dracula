@@ -63,6 +63,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
+	
 	new->turn = 1;
 	new->trail = newTrail();
 	new->map = MapNew();
@@ -173,7 +174,6 @@ GameView GvNew(char *pastPlays, Message messages[])
 					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
 				} else if (event[i] == 'V') {
 					TrapRemove(new->trail, player.place);
-					new->score -= SCORE_LOSS_VAMPIRE_MATURES;
 				} else if (event[i] == 'D') {
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;
 					player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
@@ -185,15 +185,20 @@ GameView GvNew(char *pastPlays, Message messages[])
 					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
 				}
 			}
-
+			if (player.id == new->Lord_Godalming.id) new->Lord_Godalming = player; 
+			if (player.id == new->Dr_Seward.id) new->Dr_Seward = player; 
+			if (player.id == new->Van_Helsing.id) new->Van_Helsing = player; 
+			if (player.id == new->Mina_Harker.id) new->Mina_Harker = player; 
             
         }
 
 		new->turn++;			// whose turn is it currently
         token = strtok(NULL, " ");
     }
-	int minus = new->turn / 5;
+	
+	int minus = new->turn / 6;
 	new->score -= minus;
+	
 	return new;
 }
 
@@ -208,8 +213,8 @@ void GvFree(GameView gv)
 // Game State Information
 
 Round GvGetRound(GameView gv)
-{
-	return gv->turn / 5;
+{	
+	return gv->turn / 6;
 }
 
 Player GvGetPlayer(GameView gv)

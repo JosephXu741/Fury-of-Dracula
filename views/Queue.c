@@ -7,6 +7,7 @@
 typedef struct QueueNode {
 	PlaceId location;
 	TrapId traptype;
+	bool vampire;
 	struct QueueNode *next;
 } QueueNode;
 
@@ -31,7 +32,7 @@ PlaceId GetVampireLocation (Queue Q)
 {
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
-		if (curr->traptype == IMMATURE_VAMPIRE){
+		if (curr->vampire == true){
 			return curr->location;
 		}
 		curr = curr->next;
@@ -82,7 +83,8 @@ void TrailJoin(Queue Q, TrapId traptype, PlaceId location)
 	QueueNode *new = malloc(sizeof(QueueNode));
 	assert(new != NULL);
 	new->location = location;
-	new->traptype = traptype;
+	if (traptype == NORMAL_TRAP) new->traptype = traptype;
+	if (traptype == IMMATURE_VAMPIRE) new->vampire = true;
 	//if (SearchTrail(Q, it)) new->trapNum++;
 	new->next = NULL;
 	if (Q->head == NULL)
@@ -102,6 +104,7 @@ TrapId TrailLeave(Queue Q)
 	assert(Q != NULL);
 	assert(Q->head != NULL);
 	TrapId it = Q->head->traptype;
+	
 	QueueNode *old = Q->head;
 	Q->head = old->next;
 	if (it == NORMAL_TRAP){
@@ -110,6 +113,7 @@ TrapId TrailLeave(Queue Q)
 	if (Q->head == NULL)
 		Q->tail = NULL;
 	free(old);
+	if (Q->head->vampire == true) it = IMMATURE_VAMPIRE;
 	return it;
 }
 
@@ -128,6 +132,7 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 			if (curr->traptype == NORMAL_TRAP) {
 				Q->trapNum--;
 			}
+			if (curr->vampire == true) curr->vampire = false;
 			return curr->traptype;
 		} else {
 			curr = curr->next;

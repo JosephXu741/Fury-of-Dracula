@@ -6,7 +6,7 @@
 
 typedef struct QueueNode {
 	PlaceId location;
-	TrapId traptype;
+	int trapNums;
 	bool vampire;
 	struct QueueNode *next;
 } QueueNode;
@@ -67,7 +67,7 @@ PlaceId *getTrapsLocations(Queue Q)
 	curr = Q->head;
 	int i = 0;
 	while (curr != NULL) {
-		if (curr->traptype == NORMAL_TRAP){
+		if (curr->trapNums > 0){
 			arr[i] = curr->location;
 			i++;
 		}
@@ -77,14 +77,13 @@ PlaceId *getTrapsLocations(Queue Q)
 }
 
 // add item at end of Queue 
-void TrailJoin(Queue Q, TrapId traptype, PlaceId location)
+void TrailJoin(Queue Q, PlaceId location)
 {
 	assert(Q != NULL);
 	QueueNode *new = malloc(sizeof(QueueNode));
 	assert(new != NULL);
 	new->location = location;
-	if (traptype == NORMAL_TRAP) new->traptype = traptype;
-	if (traptype == IMMATURE_VAMPIRE) new->vampire = true;
+
 	//if (SearchTrail(Q, it)) new->trapNum++;
 	new->next = NULL;
 	if (Q->head == NULL)
@@ -92,10 +91,20 @@ void TrailJoin(Queue Q, TrapId traptype, PlaceId location)
 	if (Q->tail != NULL)
 		Q->tail->next = new;
 	Q->tail = new;
-
-	if (traptype == NORMAL_TRAP) {
-		Q->trapNum++;
+	
+}
+// adds traps to trail
+void addTrapToTrail(Queue Q, PlaceId location, TrapId traptype) {
+	QueueNode *curr = Q->head;
+	while (curr != NULL) {
+		if (curr->location == location) {
+			if (traptype == NORMAL_TRAP) curr->trapNums++;
+			if (traptype == IMMATURE_VAMPIRE) curr->vampire = true;
+			break;
+		}
+		curr = curr->next;
 	}
+	if (curr->trapNums > 0) Q->trapNum++;
 }
 
 // remove item from front of Queue
@@ -103,7 +112,9 @@ TrapId TrailLeave(Queue Q)
 {
 	assert(Q != NULL);
 	assert(Q->head != NULL);
-	TrapId it = Q->head->traptype;
+	TrapId it = 0;
+	if (Q->head->trapNums > 0) it = NORMAL_TRAP;
+	if (Q->head->vampire == true) it = IMMATURE_VAMPIRE;
 	
 	QueueNode *old = Q->head;
 	Q->head = old->next;
@@ -115,6 +126,7 @@ TrapId TrailLeave(Queue Q)
 	free(old);
 	if (Q->head->vampire == true) it = IMMATURE_VAMPIRE;
 	return it;
+	printf("trail left\n");
 }
 
 // check for no items
@@ -129,11 +141,17 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
 		if (curr->location == location){
-			if (curr->traptype == NORMAL_TRAP) {
-				Q->trapNum--;
+			if (curr->trapNums > 0) {
+				int trapsremoved = curr->trapNums;
+				Q->trapNum -= curr->trapNums;
+				curr->trapNums = 0;
+				return trapsremoved;
 			}
-			if (curr->vampire == true) curr->vampire = false;
-			return curr->traptype;
+			if (curr->vampire == true) {
+				curr->vampire = false;
+				return IMMATURE_VAMPIRE;
+			}
+			
 		} else {
 			curr = curr->next;
 		}	
@@ -143,12 +161,18 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 
 PlaceId getDBTrailPosition(Queue Q, int backtrackNUM) { 	// gets the location that dracula wants to DB to in trail
 	QueueNode *curr = Q->head;
-	int headtotail = 6 - backtrackNUM;
-	for (int i = 0; i < headtotail; i++) {
+	int headtotail = TrailLength(Q) + 1 - backtrackNUM;
+	
+	int i = 1;
+	
+	while (i < headtotail && curr->next != NULL) {
 		curr = curr->next;
+		i++;
 	}
+	
 	return curr->location;
 }
+
 
 int TrailLength(Queue Q){
 	int length = 0;

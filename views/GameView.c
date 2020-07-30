@@ -63,7 +63,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-	
+	printf("%s\n", pastPlays);
 	new->turn = 1;
 	new->trail = newTrail();
 	new->map = MapNew();
@@ -101,6 +101,8 @@ GameView GvNew(char *pastPlays, Message messages[])
             abbv[1] = token[2];
             abbv[2] = '\0';
 			PlaceId place = placeAbbrevToId(abbv); 
+			PlaceType pType = placeIdToType(place);
+
 
 			char dEncounter[3];
 			dEncounter[0] = token[3];
@@ -113,20 +115,26 @@ GameView GvNew(char *pastPlays, Message messages[])
 			if (place == TELEPORT) {						// TP move
 				new->Dracula.place = CASTLE_DRACULA;
 				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
-			} else if (place >= DOUBLE_BACK_1 && place <= DOUBLE_BACK_5) {						// Double Back move
+			} else if (place >= DOUBLE_BACK_1 && place <= DOUBLE_BACK_5) {						// Double Back move				
 				int trailposition = place - HIDE;
-				PlaceId location = getDBTrailPosition(new->trail, trailposition);
+				PlaceId location = getDBTrailPosition(new->trail, trailposition);	
+				PlaceType pType1 = placeIdToType(location);	
+
 				new->Dracula.place = location;
+				if (location == SEA_UNKNOWN || pType1) new->Dracula.health -= LIFE_LOSS_SEA;	
+
 			} else if (place != HIDE) {											// is a place
 				new->Dracula.place = place;
-			}
+				TrailJoin(new->trail, new->Dracula.place);
+				if (place == SEA_UNKNOWN || pType == SEA) new->Dracula.health -= LIFE_LOSS_SEA;
 
+			} 
 
 			if (dEncounter[0] == 'T') {
-				TrailJoin(new->trail, NORMAL_TRAP, new->Dracula.place);
+				addTrapToTrail(new->trail, new->Dracula.place, NORMAL_TRAP);
 			}
 			if (dEncounter[1] == 'V') {
-				TrailJoin(new->trail, IMMATURE_VAMPIRE, new->Dracula.place);
+				addTrapToTrail(new->trail, new->Dracula.place, IMMATURE_VAMPIRE);
 			}
 
 			if (dAction != '.') { // trap expired / vampire matured i.e. trail too long
@@ -141,14 +149,14 @@ GameView GvNew(char *pastPlays, Message messages[])
 			if (token[0] == 'S') player =  new->Dr_Seward; 
 			if (token[0] == 'H') player =  new->Van_Helsing; 
 			if (token[0] == 'M') player =  new->Mina_Harker; 
-
+				
             char abbv[3];
             abbv[0] = token[1];
             abbv[1] = token[2];
             abbv[2] = '\0';
 
             PlaceId placeid = placeAbbrevToId(abbv); 
-
+			
 			if (placeid == player.place){
 				player.health += LIFE_GAIN_REST;
 				if (player.health > MAX_HUNTER_HEALTH) {
@@ -172,33 +180,38 @@ GameView GvNew(char *pastPlays, Message messages[])
 				if (event[i] == 'T') {
 					TrapRemove(new->trail, player.place);
 					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
-				} else if (event[i] == 'V') {
+					printf("here %c at %d\n", event[i], i);
+				} 
+				
+				if (event[i] == 'V') {
 					TrapRemove(new->trail, player.place);
-				} else if (event[i] == 'D') {
+				} 
+				if (event[i] == 'D') {
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;
-					player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;
+					player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;					
 				}
-
+				
 				if (player.health <= 0) {
 					player.place = HOSPITAL_PLACE;
-					player.health = 0;
+					player.health = GAME_START_HUNTER_LIFE_POINTS;
 					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
 				}
+				printf("after T \n");
 			}
+			
 			if (player.id == new->Lord_Godalming.id) new->Lord_Godalming = player; 
 			if (player.id == new->Dr_Seward.id) new->Dr_Seward = player; 
 			if (player.id == new->Van_Helsing.id) new->Van_Helsing = player; 
 			if (player.id == new->Mina_Harker.id) new->Mina_Harker = player; 
-            
+          
         }
 
 		new->turn++;			// whose turn is it currently
         token = strtok(NULL, " ");
     }
 	
-	int minus = new->turn / 6;
-	new->score -= minus;
-	
+	new->score -= GvGetRound(new);
+	 
 	return new;
 }
 
@@ -214,7 +227,7 @@ void GvFree(GameView gv)
 
 Round GvGetRound(GameView gv)
 {	
-	return gv->turn / 6;
+	return (gv->turn - 1) / 5;
 }
 
 Player GvGetPlayer(GameView gv)

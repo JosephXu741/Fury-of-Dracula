@@ -54,7 +54,7 @@ int main(void)
 		
 		Message messages[1] = {};
 		GameView gv = GvNew(trail, messages);
-
+	
 		assert(GvGetRound(gv) == 0);
 		assert(GvGetPlayer(gv) == PLAYER_DR_SEWARD);
 		assert(GvGetScore(gv) == GAME_START_SCORE);

@@ -214,122 +214,69 @@ ConnList MapGetConnections(Map m, PlaceId p)
 
 
 
-/*
-int *MapGetShortestPath(PlaceId where, int round, int player)
+
+// BFS, use Map get reachable to determine the reachable place.
+PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest, 
+	Player player, Round round, int *pathLength)
 {
-
-	Map newmap = MapNew(); // create a new map
-	assert (g != NULL);
+	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	PlaceId *path = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	Queue q = newQueue();
+	QueueJoin(q, src);
+	int isFound = 0;
 	
-	int total_length[NUM_REAL_PLACES];
-	int visited[NUM_REAL_PLACES];
-	int *st_path = malloc(sizeof(int) * NUM_REAL_PLACES);// the array of shortest path
-
-	for (int i = 0; i < NUM_REAL_PLACES; i++) {
-		total_length[i] = MAX_STEPS;
-		visited[i] = 0;
-		st_path[i] = -1;
-	}
-	//Initialize all 3 arrays
-	int totalround;
-	total_length[where] = 0;
-	Queue newQueue = newQueue();
-	QueueJoin(newQueue, where);
-
-
-	while (QueueIsEmpty(newQueue) == 0) {
-		PlaceId lL = QueueLeave(nQueue);
-		totalround = round + total_length[lL]; 
-		// determine the current round
-		visited[lL] = 1;
-		// mark visited array
-	
-		int num_Steps = (player + totalround) % 4;
-		// Calculate the number of steps hunters can move when using rail
-			
-			ConnList link_Vertex = newmap->connections[lL];
-
-			while (link_Vertex != NULL ) {
-				
-				// If vertex has been vistied
-				if (visited[link_Vertex->p] == 1) {
-					link_Vertex = link_Vertex->next;
-					continue;
-				}
-				
-				// if the connection type is rail
-				if (link_Vertex->type == RAIL) {
-					if (num_Steps == 0) { //  if the use of trail in this round is zero
-						nextVertex = nextVertex->next;
-						continue;
-					}
-					Find_railway(num_Steps, lL, link_Vertex, newmap, 
-					    total_length, st_path, visited, newQueue);
-					link_Vertex = link_Vertex->next;
-					continue;
-					
-				}
-
-				if (st_path[link_Vertex->p] == -1) {
-					QueueJoin(newQueue, link_Vertex->p);
-						st_path[link_Vertex->p] = lL;
-						total_length[link_Vertex->p] = total_length[lL] + 1;
-				}
-
-				if (st_path[link_Vertex->p] != -1) {
-					if (total_length[lL] + 1 < total_length[link_Vertex->p]) {
-						total_length[link_Vertex->p] = total_length[lL] + 1;
-						st_path[nextVertex->p] = lL;
-						link_Vertex = link_Vertex->next;
-						continue;
-					}
-				}
-				link_Vertex = link_Vertex->next;
-			}
-		
-	}
-	
-	return st_path;
-}
-
-
-static void Find_railway(int num_Steps, int lL, ConnList link_Vertex, 
-    Map g, int *total_length, int *st_path, int *visited, Queue newQueue)
-{
-	
-	// the number of steps is 1 
-	if (num_Steps == 1) {
-		if (total_length[link_Vertex->p] > total_length[lL] + 1) {
-			// we do not visit this location
-			if (st_path[link_Vertex->p] == -1) {
-				QueueJoin(newQueue, link_Vertex->p);
-			}
-			total_length[link_Vertex->p] = total_length[lL] + 1;
-			st_path[link_Vertex->p] = lL;
+	while (isFound == 0 && !QueueIsEmpty(q)) {
+		// dequeue curr vertex from queue
+		PlaceId v = QueueLeave(q);
+		if(v == dest) {
+			isFound = 1;
+			break;
 		}
 
-		return;
-	}
+		// Find out the reachable places for curr player in curr round
+		// REMEMBER TO increment round after this
+		int numReturnedLocs = 0;
+		PlaceId *reachP = MapGetHunterReachable (m, src, HUNTER, 
+			player, round, &numReturnedLocs, true, true, true);
+		round += 1;
 
-	ConnList current = g->connections[link_Vertex->p];
-	//point to the first  node
-	while (current != NULL) {
-		// determine visited
-		if (visited[current->p] == 1) {
-			current = current->next;
-			continue;
+
+		// go through all reachable places (connect to src)
+		for (int w = 0; w < numReturnedLocs; w++) {
+			if (!visited[w]) {
+				visited[w] = v;
+				QueueJoin(q, reachP[w]);
+			}
 		}
-		// Check the rail type
-		if (current->type == RAIL)
-			Find_railway(num_Steps-1, lL, link_Vertex, g, 
-			    total_length, st_path, visited, newQueue);
-		current = current->next;
-	}
-	return;
+    }
+
+
+	// trace back visited[] array, from dist to src
+    PlaceId *trace_back = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	// number of vertices stored in the path array
+	int new_nV = 0;
+    if (isFound == 1) {
+        for (PlaceId v = dest; v != src; v = visited[v]) {
+            trace_back[new_nV] = v;
+            new_nV += 1;
+        }
+        trace_back[new_nV] = src;
+        new_nV += 1;
+    }
+
+
+	// reverse trace_back[], make it goes from src to dist
+	// store in path array
+    for(int i = 0; i < new_nV; i++) {
+       path[new_nV - (i + 1)] = trace_back[i];
+    }
+
+	pathLength = &new_nV;
+    free(visited);
+    free(trace_back);
+	dropQueue(q);
+	return path;
 }
-*/
-
-
 
 
 

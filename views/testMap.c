@@ -83,6 +83,7 @@ int main(void)
 		assert(locs[4] == VIENNA);
 		assert(locs[5] == ZAGREB);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -106,6 +107,7 @@ int main(void)
 		assert(locs[6] == VIENNA);
 		assert(locs[7] == ZAGREB);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -133,6 +135,7 @@ int main(void)
 		assert(locs[10] == VIENNA);
 		assert(locs[11] == ZAGREB);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -166,6 +169,7 @@ int main(void)
 		assert(locs[10] == SARAGOSSA);
 		assert(locs[11] == TOULOUSE);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -197,6 +201,7 @@ int main(void)
 		assert(locs[14] == SARAGOSSA);
 		assert(locs[15] == TOULOUSE);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -217,6 +222,7 @@ int main(void)
 		assert(locs[4] == NORTH_SEA);
 		assert(locs[5] == PLYMOUTH);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -232,6 +238,7 @@ int main(void)
 		sortPlaces(locs, numLocs);
 		assert(locs[0] == NAPLES);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -252,6 +259,7 @@ int main(void)
 		assert(locs[4] == SARAGOSSA);
 		assert(locs[5] == TOULOUSE);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -268,6 +276,7 @@ int main(void)
 		assert(locs[0] == BAY_OF_BISCAY);
 		assert(locs[1] == BORDEAUX);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -287,6 +296,7 @@ int main(void)
 		assert(locs[3] == SARAGOSSA);
 		assert(locs[4] == TOULOUSE);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -306,6 +316,7 @@ int main(void)
 		assert(locs[3] == SZEGED);
 		assert(locs[4] == ZAGREB);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
 
@@ -321,8 +332,52 @@ int main(void)
 		sortPlaces(locs, numLocs);
 		assert(locs[0] == SZEGED);
 
+		free(locs);
 		printf("Test passed!\n");
 	}
+
+
+
+
+
+
+
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Testing MapGetShortestPath.\n");
+
+		int pathLength = 0;
+		PlaceId *locs = MapGetShortestPath(m, CADIZ, BARCELONA, 0, 1, &pathLength);
+
+		assert(pathLength == 2);
+		sortPlaces(locs, numLocs);
+		//assert(locs[0] == SZEGED);
+
+		free(locs);
+		printf("Test passed!\n");
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/*

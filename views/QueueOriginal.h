@@ -1,8 +1,8 @@
 // Queue.h ... interface to Queue ADT
 // Written by John Shepherd, March 2013
 
-#ifndef QUEUE_H
-#define QUEUE_H
+//#ifndef QUEUE_ORIGINAL_H
+#define QUEUE_ORIGINAL_H
 
 #include "Item.h"
 
@@ -15,4 +15,4 @@ void QueueJoin (Queue, Item);	// add item on queue
 Item QueueLeave (Queue);		// remove item from queue
 int QueueIsEmpty (Queue);		// check for no items
 
-#endif
+//#endif

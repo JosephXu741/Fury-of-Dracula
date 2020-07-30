@@ -31,7 +31,7 @@ Queue.o: Queue.c Queue.h Trap.h
 QueueOriginal.o: QueueOriginal.c QueueOriginal.h Item.h
 
 Places.o: Places.c Places.h Game.h Queue.h
-Map.o: Map.c Map.h Places.h Game.h Queue.h QueueOriginal.h Item.h
+Map.o: Map.c Map.h Places.h Game.h QueueOriginal.h Item.h
 GameView.o:	GameView.c GameView.h Game.h Queue.h
 HunterView.o: HunterView.c HunterView.h Game.h QueueOriginal.h Map.h
 DraculaView.o: DraculaView.c DraculaView.h Game.h Queue.h

@@ -16,13 +16,13 @@ BINS = testGameView testHunterView testDraculaView testMap
 all: $(BINS)
 
 testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o Queue.o QueueOriginal.o
-testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Trap.h
+testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Trap.h Item.h
 
 testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o Queue.o QueueOriginal.o
-testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h
+testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Item.h
 
 testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o Queue.o
-testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h
+testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h 
 
 testMap: testMap.o Map.o Places.o QueueOriginal.o testUtils.o
 testMap.o: testMap.c Map.h Places.h QueueOriginal.h Item.h testUtils.c testUtils.h
@@ -30,10 +30,10 @@ testMap.o: testMap.c Map.h Places.h QueueOriginal.h Item.h testUtils.c testUtils
 Queue.o: Queue.c Queue.h Trap.h
 QueueOriginal.o: QueueOriginal.c QueueOriginal.h Item.h
 
-Places.o: Places.c Places.h Game.h Queue.h
+Places.o: Places.c Places.h Game.h QueueOriginal.h Item.h
 Map.o: Map.c Map.h Places.h Game.h QueueOriginal.h Item.h
 GameView.o:	GameView.c GameView.h Game.h Queue.h
-HunterView.o: HunterView.c HunterView.h Game.h QueueOriginal.h Map.h
+HunterView.o: HunterView.c HunterView.h Game.h QueueOriginal.h Item.h Map.h
 DraculaView.o: DraculaView.c DraculaView.h Game.h Queue.h
 testUtils.o: testUtils.c Places.h Game.h  
 .PHONY: clean

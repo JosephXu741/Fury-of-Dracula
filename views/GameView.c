@@ -63,7 +63,9 @@ GameView GvNew(char *pastPlays, Message messages[])
 		fprintf(stderr, "Couldn't allocate GameView!\n");
 		exit(EXIT_FAILURE);
 	}
-	printf("%s\n", pastPlays);
+	
+	new->pastPlays = pastPlays;
+
 	new->turn = 1;
 	new->trail = newTrail();
 	new->map = MapNew();
@@ -103,14 +105,13 @@ GameView GvNew(char *pastPlays, Message messages[])
 			PlaceId place = placeAbbrevToId(abbv); 
 			PlaceType pType = placeIdToType(place);
 
-
 			char dEncounter[3];
 			dEncounter[0] = token[3];
 			dEncounter[1] = token[4];
 			dEncounter[2] = '\0';
 
 			char dAction = token[5];
-
+			
 
 			if (place == TELEPORT) {						// TP move
 				new->Dracula.place = CASTLE_DRACULA;
@@ -119,17 +120,20 @@ GameView GvNew(char *pastPlays, Message messages[])
 				int trailposition = place - HIDE;
 				PlaceId location = getDBTrailPosition(new->trail, trailposition);	
 				PlaceType pType1 = placeIdToType(location);	
-
+				if (location == CASTLE_DRACULA)  {
+					new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
+				}
 				new->Dracula.place = location;
-				if (location == SEA_UNKNOWN || pType1) new->Dracula.health -= LIFE_LOSS_SEA;	
+				if (location == SEA_UNKNOWN || pType1 == SEA) new->Dracula.health -= LIFE_LOSS_SEA;	
 
 			} else if (place != HIDE) {											// is a place
 				new->Dracula.place = place;
 				TrailJoin(new->trail, new->Dracula.place);
 				if (place == SEA_UNKNOWN || pType == SEA) new->Dracula.health -= LIFE_LOSS_SEA;
-
 			} 
-
+			if (place == CASTLE_DRACULA) { 
+				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
+			}
 			if (dEncounter[0] == 'T') {
 				addTrapToTrail(new->trail, new->Dracula.place, NORMAL_TRAP);
 			}
@@ -176,11 +180,10 @@ GameView GvNew(char *pastPlays, Message messages[])
 			event[3] = token[6];
 			event[4] = '\0';
 
-			for (int i = 0; event[i]; i++){
+			for (int i = 0; i < 4; i++){
 				if (event[i] == 'T') {
 					TrapRemove(new->trail, player.place);
-					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;
-					printf("here %c at %d\n", event[i], i);
+					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;					
 				} 
 				
 				if (event[i] == 'V') {
@@ -190,13 +193,11 @@ GameView GvNew(char *pastPlays, Message messages[])
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;
 					player.health -= LIFE_LOSS_DRACULA_ENCOUNTER;					
 				}
-				
 				if (player.health <= 0) {
+					player.health = 0;
 					player.place = HOSPITAL_PLACE;
-					player.health = GAME_START_HUNTER_LIFE_POINTS;
 					new->score -= SCORE_LOSS_HUNTER_HOSPITAL;
 				}
-				printf("after T \n");
 			}
 			
 			if (player.id == new->Lord_Godalming.id) new->Lord_Godalming = player; 
@@ -211,7 +212,6 @@ GameView GvNew(char *pastPlays, Message messages[])
     }
 	
 	new->score -= GvGetRound(new);
-	 
 	return new;
 }
 
@@ -309,14 +309,15 @@ PlaceId *GvGetTrapLocations(GameView gv, int *numTraps)
 PlaceId *GvGetMoveHistory(GameView gv, Player player,
                           int *numReturnedMoves, bool *canFree)
 {
-	PlaceId *history;
+	PlaceId *history = calloc(1, sizeof(int));
 	int numMoves = 0;
 	char s[10000];
     strcpy(s, gv->pastPlays);
     char *token = strtok(s, " ");
 	char *letter = playerToLetter(gv, player);
     while (token != NULL){
-			if (strncmp(token, letter, 1) == 0) {
+		
+			if (token[0] == *letter) {			
 			char abbv[3];
 			abbv[0] = token[1];
 			abbv[1] = token[2];
@@ -324,11 +325,11 @@ PlaceId *GvGetMoveHistory(GameView gv, Player player,
 			PlaceId move = placeAbbrevToId(abbv); 
 			history = realloc(history, (numMoves + 1) * sizeof(*history));
 			history[numMoves] = move;
-			numMoves++;
+			numMoves++;				
 		}
         token = strtok(NULL, " ");
     }
-
+	
 	*numReturnedMoves = numMoves;
 	*canFree = false;
 	return history;
@@ -427,8 +428,10 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 	}
 	PlaceId *history;
 	int num = 0;
+	
 	char s[10000];
     strcpy(s, gv->pastPlays);
+	
     char *token = strtok(s, " ");
     while (token != NULL && num < numLocs){
 		if (strncmp(token, "D", 1) == 0) {
@@ -437,6 +440,7 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 			abbv[1] = token[2];
 			abbv[2] = '\0';
 			PlaceId move = placeAbbrevToId(abbv); 
+			printf("%d\n", move);
 
 			if(move == HIDE){
 				history = realloc(history, (numLocs + 1) * sizeof(*history));

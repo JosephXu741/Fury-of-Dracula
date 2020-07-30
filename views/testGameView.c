@@ -251,7 +251,7 @@ int main(void)
 		
 		Message messages[10] = {};
 		GameView gv = GvNew(trail, messages);
-		
+		printf("health %d\n", GvGetHealth(gv, PLAYER_DRACULA));
 		assert(GvGetHealth(gv, PLAYER_DRACULA) ==
 				GAME_START_BLOOD_POINTS + (2 * LIFE_GAIN_CASTLE_DRACULA));
 		assert(GvGetPlayerLocation(gv, PLAYER_DRACULA) == CASTLE_DRACULA);
@@ -379,8 +379,9 @@ int main(void)
 		}
 		
 		// Dracula's move/location history
-		{
+		{	
 			int numMoves = 0; bool canFree = false;
+			
 			PlaceId *moves = GvGetMoveHistory(gv, PLAYER_DRACULA,
 			                                  &numMoves, &canFree);
 			assert(numMoves == 6);

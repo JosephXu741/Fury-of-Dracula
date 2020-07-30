@@ -494,5 +494,302 @@ int main(void)
 		printf("Test passed!\n");
 	}
 
+
+	///////////////////////////////////////////////////////////////
+	// add test for reachable
+	
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Testing Reachables\n");
+		
+		char *trail = "";
+		Message messages[] = {};
+		GameView gv = GvNew(trail, messages);
+
+		{
+			printf("\tReachable from TOULOUSE, all type "
+			       "(PLAYER_MINA_HARKER, Round 1)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_MINA_HARKER,
+			                                     1, TOULOUSE, true, true,
+			                                     true, &numLocs);
+
+			assert(numLocs == 6);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BARCELONA);
+			assert(locs[1] == BORDEAUX);
+			assert(locs[2] == CLERMONT_FERRAND);
+			assert(locs[3] == MARSEILLES);
+			assert(locs[4] == SARAGOSSA);
+			assert(locs[5] == TOULOUSE);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from VIENNA, all type "
+			       "(PLAYER_MINA_HARKER, Round 1, maxDist 0)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_MINA_HARKER,
+			                                     1, VIENNA, &numLocs);
+
+			assert(numLocs == 5);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BUDAPEST);
+			assert(locs[1] == MUNICH);
+			assert(locs[2] == PRAGUE);
+			assert(locs[3] == VIENNA);
+			assert(locs[4] == ZAGREB);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from VIENNA, all type "
+			       "(PLAYER_MINA_HARKER, Round 2, maxDist 1)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_MINA_HARKER,
+			                                     2, VIENNA, &numLocs);
+
+			assert(numLocs == 6);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BUDAPEST);
+			assert(locs[1] == MUNICH);
+			assert(locs[2] == PRAGUE);
+			assert(locs[3] == VENICE);
+			assert(locs[4] == VIENNA);
+			assert(locs[5] == ZAGREB);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from VIENNA, all type "
+			       "(PLAYER_MINA_HARKER, Round 3, maxDist 2)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_MINA_HARKER,
+			                                     3, VIENNA, &numLocs);
+
+			assert(numLocs == 8);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BERLIN);
+			assert(locs[1] == BUDAPEST);
+			assert(locs[2] == MUNICH);
+			assert(locs[3] == PRAGUE);
+			assert(locs[4] == SZEGED);
+			assert(locs[5] == VENICE);
+			assert(locs[6] == VIENNA);
+			assert(locs[7] == ZAGREB);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from VIENNA, all type "
+			       "(PLAYER_MINA_HARKER, Round 8, maxDist 3)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_MINA_HARKER,
+			                                     8, VIENNA, &numLocs);
+
+			assert(numLocs == 12);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BELGRADE);
+			assert(locs[1] == BERLIN);
+			assert(locs[2] == BUCHAREST);
+			assert(locs[3] == BUDAPEST);
+			assert(locs[4] == HAMBURG);
+			assert(locs[5] == LEIPZIG);
+			assert(locs[6] == MUNICH);
+			assert(locs[7] == PRAGUE);
+			assert(locs[8] == SZEGED);
+			assert(locs[9] == VENICE);
+			assert(locs[10] == VIENNA);
+			assert(locs[11] == ZAGREB);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from BORDEAUX, all type "
+			       "(PLAYER_LORD_GODALMING, Round 2, maxDist 2)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_LORD_GODALMING,
+			                                     2, BORDEAUX, &numLocs);
+
+			assert(numLocs == 12);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BARCELONA);
+			assert(locs[1] == BAY_OF_BISCAY);
+			assert(locs[2] == BORDEAUX);
+			assert(locs[3] == BRUSSELS);
+			assert(locs[4] == CLERMONT_FERRAND);
+			assert(locs[5] == LE_HAVRE);
+			assert(locs[6] == MADRID);
+			assert(locs[7] == MARSEILLES);
+			assert(locs[8] == NANTES);
+			assert(locs[9] == PARIS);
+			assert(locs[10] == SARAGOSSA);
+			assert(locs[11] == TOULOUSE);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from BORDEAUX, all type "
+			       "(PLAYER_LORD_GODALMING, Round 3, maxDist 3)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_LORD_GODALMING,
+			                                     3, BORDEAUX, &numLocs);
+
+			assert(numLocs == 16);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == ALICANTE);
+			assert(locs[1] == BARCELONA);
+			assert(locs[2] == BAY_OF_BISCAY);
+			assert(locs[3] == BORDEAUX);
+			assert(locs[4] == BRUSSELS);
+			assert(locs[5] == CLERMONT_FERRAND);
+			assert(locs[6] == COLOGNE);
+			assert(locs[7] == LE_HAVRE);
+			assert(locs[8] == LISBON);
+			assert(locs[9] == MADRID);
+			assert(locs[10] == MARSEILLES);
+			assert(locs[11] == NANTES);
+			assert(locs[12] == PARIS);
+			assert(locs[13] == SANTANDER);
+			assert(locs[14] == SARAGOSSA);
+			assert(locs[15] == TOULOUSE);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from ENGLISH_CHANNEL, all type "
+			       "(PLAYER_LORD_GODALMING, Round 3)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_LORD_GODALMING,
+			                                     3, ENGLISH_CHANNEL, &numLocs);
+
+			assert(numLocs == 6);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == ATLANTIC_OCEAN);
+			assert(locs[1] == ENGLISH_CHANNEL);
+			assert(locs[2] == LE_HAVRE);
+			assert(locs[3] == LONDON);
+			assert(locs[4] == NORTH_SEA);
+			assert(locs[5] == PLYMOUTH);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from NAPLES, rail only "
+			       "(PLAYER_LORD_GODALMING, Round 4)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
+			                                     4, NAPLES, false, true,
+			                                     false, &numLocs);
+
+			assert(numLocs == 1);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == NAPLES);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from BORDEAUX, all type "
+			       "(PLAYER_DRACULA, Round 4)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachable(gv, PLAYER_DRACULA,
+			                                     4, BORDEAUX, &numLocs);
+
+			assert(numLocs == 6);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BAY_OF_BISCAY);
+			assert(locs[1] == BORDEAUX);
+			assert(locs[2] == CLERMONT_FERRAND);
+			assert(locs[3] == NANTES);
+			assert(locs[4] == SARAGOSSA);
+			assert(locs[5] == TOULOUSE);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from BORDEAUX, sea only "
+			       "(PLAYER_DRACULA, Round 6)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_DRACULA,
+			                                     6, BORDEAUX, false, false,
+			                                     true, &numLocs);
+			assert(numLocs == 2);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BAY_OF_BISCAY);
+			assert(locs[1] == BORDEAUX);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from BORDEAUX, road only "
+			       "(PLAYER_DRACULA, Round 10)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_DRACULA,
+			                                     10, BORDEAUX, true, false,
+			                                     false, &numLocs);
+			assert(numLocs == 5);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BORDEAUX);
+			assert(locs[1] == CLERMONT_FERRAND);
+			assert(locs[2] == NANTES);
+			assert(locs[3] == SARAGOSSA);
+			assert(locs[4] == TOULOUSE);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from SZEGED, all type "
+			       "(PLAYER_DRACULA, Round 6)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_DRACULA,
+			                                     6, SZEGED, true, false,
+			                                     true, &numLocs);
+			assert(numLocs == 5);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BELGRADE);
+			assert(locs[1] == BUDAPEST);
+			assert(locs[2] == KLAUSENBURG);
+			assert(locs[3] == SZEGED);
+			assert(locs[4] == ZAGREB);
+			free(locs);
+		}
+
+		{
+			printf("\tReachable from SZEGED, sea only "
+			       "(PLAYER_DRACULA, Round 6)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_DRACULA,
+			                                     6, SZEGED, false, false,
+			                                     true, &numLocs);
+			assert(numLocs == 1);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == SZEGED);
+			free(locs);
+		}
+
+		GvFree(gv);
+		printf("Test passed!\n");
+	}
+
+	///////////////////////////////////////////////////////////////
+	// end for test for reachable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	return EXIT_SUCCESS;
 }

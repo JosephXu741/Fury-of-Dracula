@@ -219,8 +219,9 @@ ConnList MapGetConnections(Map m, PlaceId p)
 PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest, 
 	Player player, Round round, int *pathLength)
 {
-	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
 	PlaceId *path = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	/*
+	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
 	Queue q = newQueue();
 	QueueJoin(q, src);
 	int isFound = 0;
@@ -275,6 +276,8 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
     free(visited);
     free(trace_back);
 	dropQueue(q);
+	return path;
+	*/
 	return path;
 }
 

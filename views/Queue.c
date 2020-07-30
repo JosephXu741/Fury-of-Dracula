@@ -25,6 +25,7 @@ Queue newTrail()
 	assert(q != NULL);
 	q->head = NULL;
 	q->tail = NULL;
+	q->trapNum = 0;
 	return q;
 }
 
@@ -63,9 +64,10 @@ PlaceId *getTrapsLocations(Queue Q)
 	QueueNode *curr;
 	assert(Q != NULL);
 	
-	PlaceId *arr = calloc(Q->trapNum, sizeof(int));
+	PlaceId *arr = calloc(Q->trapNum, sizeof(PlaceId));
 	curr = Q->head;
 	int i = 0;
+	
 	while (curr != NULL) {
 		if (curr->trapNums > 0){
 			arr[i] = curr->location;
@@ -83,6 +85,8 @@ void TrailJoin(Queue Q, PlaceId location)
 	QueueNode *new = malloc(sizeof(QueueNode));
 	assert(new != NULL);
 	new->location = location;
+	new->trapNums = 0;
+	new->vampire = false;
 
 	//if (SearchTrail(Q, it)) new->trapNum++;
 	new->next = NULL;
@@ -98,13 +102,13 @@ void addTrapToTrail(Queue Q, PlaceId location, TrapId traptype) {
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
 		if (curr->location == location) {
-			if (traptype == NORMAL_TRAP) curr->trapNums++;
+			if (traptype == NORMAL_TRAP && curr->trapNums++);
 			if (traptype == IMMATURE_VAMPIRE) curr->vampire = true;
 			break;
 		}
 		curr = curr->next;
 	}
-	if (curr->trapNums > 0) Q->trapNum++;
+	if (curr->trapNums > 0) Q->trapNum ++;
 }
 
 // remove item from front of Queue
@@ -126,7 +130,6 @@ TrapId TrailLeave(Queue Q)
 	free(old);
 	if (Q->head->vampire == true) it = IMMATURE_VAMPIRE;
 	return it;
-	printf("trail left\n");
 }
 
 // check for no items
@@ -142,10 +145,10 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 	while (curr != NULL) {
 		if (curr->location == location){
 			if (curr->trapNums > 0) {
-				int trapsremoved = curr->trapNums;
+				
 				Q->trapNum -= curr->trapNums;
-				curr->trapNums = 0;
-				return trapsremoved;
+				curr->trapNums--;
+				return NORMAL_TRAP;
 			}
 			if (curr->vampire == true) {
 				curr->vampire = false;

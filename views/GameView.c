@@ -187,12 +187,12 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 			for (int i = 0; i < 4; i++){
 				if (event[i] == 'T') {
-					TrapRemove(new->trail, player.place);
+					TrapRemove(new->trail, player.place, NORMAL_TRAP);
 					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;					
 				} 
 				
 				if (event[i] == 'V') {
-					TrapRemove(new->trail, player.place);
+					TrapRemove(new->trail, player.place, IMMATURE_VAMPIRE);
 				} 
 				if (event[i] == 'D') {
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;
@@ -443,7 +443,6 @@ PlaceId *GvGetLastLocations(GameView gv, Player player, int numLocs,
 			abbv[1] = token[2];
 			abbv[2] = '\0';
 			PlaceId move = placeAbbrevToId(abbv); 
-			printf("%d\n", move);
 
 			if(move == HIDE){
 				history = realloc(history, (numLocs + 1) * sizeof(*history));

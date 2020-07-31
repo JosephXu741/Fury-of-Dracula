@@ -767,6 +767,23 @@ int main(void)
 			free(locs);
 		}
 
+		{
+			printf("\tReachable from PARIS, rail only "
+			       "(PLAYER_LORD_GODALMING, Round 1)\n");
+			int numLocs = -1;
+			PlaceId *locs = GvGetReachableByType(gv, PLAYER_LORD_GODALMING,
+			                                     1, PARIS, false, true,
+			                                     false, &numLocs);
+			assert(numLocs == 5);
+			sortPlaces(locs, numLocs);
+			assert(locs[0] == BORDEAUX);
+			assert(locs[1] == BRUSSELS);
+			assert(locs[2] == LE_HAVRE);
+			assert(locs[3] == MARSEILLES);
+			assert(locs[4] == PARIS);
+			free(locs);
+		}
+
 		GvFree(gv);
 		printf("Test passed!\n");
 	}

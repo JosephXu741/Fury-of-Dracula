@@ -478,7 +478,7 @@ int main(void)
 		printf("Reachable from TOULOUSE, all type "
 		       "(PLAYER_MINA_HARKER, Round 1)\n");
 		
-		char *trail = "GSZ.... SGE.... HGE.... MTO.... DSZ.V..";
+		char *trail = "GSZ.... STO.... HTO.... MTO.... DSZ.V..";
 		Message messages[1] = {};
 		HunterView hv = HvNew(trail, messages);
 		
@@ -511,7 +511,7 @@ int main(void)
 		
 		int numLocs = -1;
 		PlaceId *locs = HvWhereCanIGo(hv, &numLocs);
-		
+		printf("numloc:%d\n", locs[0]);
 		assert(numLocs == 6);
 		sortPlaces(locs, numLocs);
 		assert(locs[0] == BARCELONA);

@@ -93,7 +93,7 @@ void TrailJoin(Queue Q, PlaceId location)
 	if (Q->head == NULL)
 		Q->head = new;
 	if (Q->tail != NULL)
-		Q->tail->next = new;
+		Q->tail->next = new;		
 	Q->tail = new;
 	
 }
@@ -141,20 +141,20 @@ int TrailIsEmpty(Queue Q)
 	return (Q->head == NULL);
 }
 // searches a trail via a key (placeid) and returns the trap it
-TrapId TrapRemove(Queue Q, PlaceId location) 
+TrapId TrapRemove(Queue Q, PlaceId location, TrapId traptype) 
 { 
 	assert(Q != NULL);
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
 		if (curr->location == location){
-			if (curr->trapNums > 0) {
+			if (traptype == NORMAL_TRAP && curr->trapNums > 0) {
 				
 				Q->trapNum -= curr->trapNums;
 				curr->trapNums--;
 				UpdateTrapSameLocation(Q, location);
 				return NORMAL_TRAP;
 			}
-			if (curr->vampire == true) {
+			if (traptype == IMMATURE_VAMPIRE && curr->vampire == true) {
 				curr->vampire = false;
 				return IMMATURE_VAMPIRE;
 			}

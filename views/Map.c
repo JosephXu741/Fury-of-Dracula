@@ -230,7 +230,9 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	int round_counter = 1;
 	int round_incrementor = 0;
 
-	//printf("IN HERE\n");
+	PlaceId breakQueue = 1000;
+	QueueOrgJoin(q, breakQueue);
+
 	while (isFound == 0 && !QueueOrgIsEmpty(q)) {
 		// dequeue curr vertex from queue
 		PlaceId v = QueueOrgLeave(q);
@@ -240,17 +242,28 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (round_counter == 0) {
 			round_counter += round_incrementor;
 			round_incrementor = 0;
 			round_no++;
 		}
+=======
+>>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 
 		// Find out the reachable places for curr player in curr round
 		// REMEMBER TO increment round after this
+		if (v == breakQueue) {
+			round++;
+			continue;
+		}
 		int numReturnedLocs = 0;
 		PlaceId *reachP = MapGetHunterReachable (m, v, HUNTER, 
+<<<<<<< HEAD
 			player, round_no, &numReturnedLocs, true, true, true);
+=======
+			player, round, &numReturnedLocs, true, true, true);
+>>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 
 
 		// go through all reachable places (connect to src)
@@ -262,41 +275,20 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 				printf("queue join:%d\n", reachP[w]);
 			}
 		}
+<<<<<<< HEAD
 		round_incrementor += w;
 
 
 		round_counter--;
+=======
+		QueueOrgJoin(q, breakQueue);
+>>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 
-/*
-	// trace back visited[] array, from dist to src
-    PlaceId *trace_back = calloc(MapNumPlaces(m), sizeof(PlaceId));
-	// number of vertices stored in the path array
-	int new_nV = 0;
-    if (isFound == 1) {
-        for (PlaceId v = dest; v != src; v = visited[v]) {
-            trace_back[new_nV] = v;
-            new_nV += 1;
-        }
-        trace_back[new_nV] = src;
-        new_nV += 1;
-    }
 
-
-	// reverse trace_back[], make it goes from src to dist
-	// store in path array
-    for(int i = 0; i < new_nV; i++) {
-       path[new_nV - (i + 1)] = trace_back[i];
-    }
-	
-	printf("new:%d\n", new_nV);
-	*pathLength = new_nV;
-    free(visited);
-    free(trace_back);
-	dropQueueOrg(q);
-	*/
-	
+	// trace back visited array
+	// set path from src to dist
 	int number = 0;
 	if (isFound == 1) {
 		for (PlaceId v = dest; v != src; v = visited[v]) {

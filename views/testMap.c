@@ -352,7 +352,6 @@ int main(void)
 		PlaceId *locs = MapGetShortestPath(m, LISBON, COLOGNE, 0, 1, &pathLength);
 
 		assert(pathLength == 4);
-		sortPlaces(locs, pathLength);
 		printf("locs0:%d\n", locs[0]);//should be 37, 40, 11, 19
 		printf("locs1:%d\n", locs[1]);
 		printf("locs2:%d\n", locs[2]);

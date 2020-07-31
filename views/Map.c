@@ -219,6 +219,7 @@ ConnList MapGetConnections(Map m, PlaceId p)
 PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest, 
 	Player player, Round round, int *pathLength)
 {
+	int round_no = round;
 	PlaceId *path = calloc(MapNumPlaces(m), sizeof(PlaceId));
 	
 	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
@@ -226,6 +227,8 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	QueueOrg q = newQueueOrg();
 	QueueOrgJoin(q, src);
 	int isFound = 0;
+	int round_counter = 1;
+	int round_incrementor = 0;
 
 	//printf("IN HERE\n");
 	while (isFound == 0 && !QueueOrgIsEmpty(q)) {
@@ -237,22 +240,32 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 			break;
 		}
 
+		if (round_counter == 0) {
+			round_counter += round_incrementor;
+			round_incrementor = 0;
+			round_no++;
+		}
+
 		// Find out the reachable places for curr player in curr round
 		// REMEMBER TO increment round after this
 		int numReturnedLocs = 0;
 		PlaceId *reachP = MapGetHunterReachable (m, v, HUNTER, 
-			player, round, &numReturnedLocs, true, true, true);
-		round += 1;
+			player, round_no, &numReturnedLocs, true, true, true);
 
 
 		// go through all reachable places (connect to src)
-		for (int w = 1; w < numReturnedLocs; w++) {
+		int w;
+		for (w = 1; w < numReturnedLocs; w++) {
 			if (visited[reachP[w]] == 0) {
 				visited[reachP[w]] = v;
 				QueueOrgJoin(q, reachP[w]);
 				printf("queue join:%d\n", reachP[w]);
 			}
 		}
+		round_incrementor += w;
+
+
+		round_counter--;
 		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 

@@ -236,7 +236,6 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	while (isFound == 0 && !QueueOrgIsEmpty(q)) {
 		// dequeue curr vertex from queue
 		PlaceId v = QueueOrgLeave(q);
-		printf("v is:%d\n", v);
 		if(v == dest) {
 			isFound = 1;
 			break;
@@ -265,14 +264,12 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 			if (visited[reachP[w]] == 0) {
 				visited[reachP[w]] = v;
 				QueueOrgJoin(q, reachP[w]);
-				printf("queue join:%d\n", reachP[w]);
 			}
 		}
 		round_incrementor += w;
 
 
 		round_counter--;
-		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 
 

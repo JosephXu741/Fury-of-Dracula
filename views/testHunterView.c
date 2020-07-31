@@ -319,7 +319,7 @@ int main(void)
 			assert(path[2] == COLOGNE);
 			free(path);
 		}
-		
+		/*
 		{
 			printf("\tSwansea -> Hamburg (Van Helsing, Round 1)\n");
 			int pathLength = -1;
@@ -360,7 +360,7 @@ int main(void)
 			assert(path[6] == CASTLE_DRACULA);
 			free(path);
 		}
-		
+		*/
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
@@ -390,7 +390,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-	
+	/*
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Checking Paris rail connections "
@@ -416,7 +416,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-	
+	*/
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Checking Adriatic Sea boat connections "
@@ -499,7 +499,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
+	/*
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Reachable from TOULOUSE, all type "
@@ -525,7 +525,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
+	
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Reachable from BORDEAUX, rail only "
@@ -548,7 +548,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
+	*/
 
 	///////////////////////////////////////////////////////////////
 	// end for test for reachable

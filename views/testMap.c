@@ -349,14 +349,11 @@ int main(void)
 		int pathLength = 0;
 		PlaceId *locs = MapGetShortestPath(m, LISBON, COLOGNE, 0, 1, &pathLength);
 
-		assert(pathLength == 5);
-		//sortPlaces(locs, pathLength);
-		printf("locs0:%d\n", locs[0]);//should be 37, 40, 11, 19
-		printf("locs1:%d\n", locs[1]);
-		printf("locs2:%d\n", locs[2]);
-		printf("locs3:%d\n", locs[3]);
-		printf("locs4:%d\n", locs[4]);
-		//assert(locs[0] == CADIZ);
+		assert(pathLength == 4);
+		assert(locs[0] == LISBON);
+		assert(locs[1] == MADRID);
+		assert(locs[2] == BORDEAUX);
+		assert(locs[3] == COLOGNE);
 
 		free(locs);
 		printf("Test passed!\n");

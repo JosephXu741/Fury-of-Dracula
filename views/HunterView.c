@@ -137,6 +137,7 @@ PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
 	for (int i = 0; i < *pathLength; i++) {
 		path[i] = result[i + 1];
 	}
+	*pathLength -= 1;
 
 	return path;
 }

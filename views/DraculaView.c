@@ -90,17 +90,21 @@ PlaceId *DvGetTrapLocations(DraculaView dv, int *numTraps)
 
 PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 {
+	// If Dracula has not made any moves yet, return NOWHERE
 	if (GvGetPlayerLocation(dv->gv, PLAYER_DRACULA) == NOWHERE){
 		*numReturnedMoves = 0;
 		return NULL;
 	}
 
+	// reachable array includes all places that are reachable while last_moves gets the past 5 moves
 	PlaceId *reachable = GvGetReachable(dv->gv, PLAYER_DRACULA, GvGetRound(dv->gv), GvGetPlayerLocation(dv->gv, PLAYER_DRACULA), numReturnedMoves);
 	PlaceId *last_moves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedMoves, false);
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
 	PlaceId *new = malloc(sizeof(int));
+
+	// Check if the moves HIDE or DOUBLE_BACK have been made in the past 5 moves
 	for (int i = 0; last_moves[i]; i++){
 		if (last_moves[i] == HIDE){
 			hide = 1;
@@ -109,6 +113,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 			db = 1;
 		}
 	}
+	// If no HIDE moves, HIDE is always going to be a valid move
 	if (hide == 0) {
 		new = realloc(new, (newSize + 1) * sizeof(*new));
 		new[newSize] = HIDE;
@@ -116,11 +121,13 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 	} 
 
 
+	// For every value in reachable, add to new if its not in last_moves
 	for (int i = 0; reachable[i]; i++){
 		int dupe = 0;
 		for (int j = 0; last_moves[j]; j++){
 			if (reachable[i] == last_moves[j]){
 				dupe = 1;
+				// If it exists in last_moves, check to see if it can be a DOUBLE_BACK move
 				if (db == 0){
 					new = realloc(new, (newSize + 1) * sizeof(*new));
 					new[newSize] = DOUBLE_BACK_1 + j;
@@ -151,12 +158,14 @@ PlaceId *DvWhereCanIGo(DraculaView dv, int *numReturnedLocs)
 		*numReturnedLocs = 0;
 		return NULL;
 	}
+
 	PlaceId *reachable = GvGetReachable(dv->gv, PLAYER_DRACULA, GvGetRound(dv->gv), GvGetPlayerLocation(dv->gv, PLAYER_DRACULA), numReturnedLocs);
 	PlaceId *last_moves = GvGetLastMoves(dv->gv, PLAYER_DRACULA, TRAIL_SIZE, numReturnedLocs, false);
 	int hide = 0;
 	int db = 0;
 	int newSize = 0;
 	PlaceId *new = malloc(sizeof(int));
+
 	for (int i = 0; last_moves[i]; i++){
 		if (last_moves[i] == GvGetPlayerLocation(dv->gv, PLAYER_DRACULA)){
 			hide = 1;
@@ -255,6 +264,7 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 		*numReturnedLocs = 0;
 		return NULL;
 	}
+	
 	*numReturnedLocs = newSize;
 	return new;
 }

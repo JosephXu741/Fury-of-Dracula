@@ -347,6 +347,8 @@ int main(void)
 		printf("Testing MapGetShortestPath.\n");
 
 		int pathLength = 0;
+		//printf("pAAAAAAAAAAAAAAAA\n");
+		printf("pathlength is:%d\n", pathLength);
 		PlaceId *locs = MapGetShortestPath(m, CADIZ, BARCELONA, 0, 1, &pathLength);
 
 		assert(pathLength == 2);

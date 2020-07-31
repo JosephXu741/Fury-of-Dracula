@@ -21,7 +21,7 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
-#include "QueueOriginal.h"
+#include "Queue.h"
 
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1

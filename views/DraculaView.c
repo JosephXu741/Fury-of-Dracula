@@ -140,6 +140,7 @@ PlaceId *DvGetValidMoves(DraculaView dv, int *numReturnedMoves)
 		return NULL;
 	}
 
+	*numReturnedMoves = newSize;
 	return new;
 
 }

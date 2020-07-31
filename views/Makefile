@@ -16,10 +16,10 @@ BINS = testGameView testHunterView testDraculaView testMap
 all: $(BINS)
 
 testGameView: testGameView.o testUtils.o GameView.o Map.o Places.o Queue.o QueueOriginal.o
-testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Trap.h Item.h
+testGameView.o: testGameView.c GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Trap.h
 
 testHunterView: testHunterView.o testUtils.o HunterView.o GameView.o Map.o Places.o Queue.o QueueOriginal.o
-testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h Item.h
+testHunterView.o: testHunterView.c HunterView.h GameView.h Map.h Places.h Game.h Queue.h QueueOriginal.h
 
 testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Places.o Queue.o
 testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h 

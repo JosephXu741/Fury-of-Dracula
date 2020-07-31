@@ -348,7 +348,7 @@ char *playerToLetter(GameView gv, Player player)
 PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
                         int *numReturnedMoves, bool *canFree)
 {
-	PlaceId *history;
+	PlaceId *history = malloc(sizeof(int));
 	int num = 0;
 	char s[10000];
     strcpy(s, gv->pastPlays);
@@ -361,15 +361,13 @@ PlaceId *GvGetLastMoves(GameView gv, Player player, int numMoves,
 			abbv[1] = token[2];
 			abbv[2] = '\0';
 			PlaceId move = placeAbbrevToId(abbv); 
-			history = realloc(history, (numMoves + 1) * sizeof(*history));
-			history[numMoves] = move;
+			history = realloc(history, (num + 1) * sizeof(*history));
+			history[num] = move;
 			num++;
 		}
         token = strtok(NULL, " ");
     }
-
 	*numReturnedMoves = num;
-	*canFree = false;
 	return history;
 }
 

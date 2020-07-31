@@ -22,6 +22,7 @@
 #include "HunterView.h"
 #include "Places.h"
 #include "testUtils.h"
+#include "QueueOriginal.h"
 
 int main(void)
 {

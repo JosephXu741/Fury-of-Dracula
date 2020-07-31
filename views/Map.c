@@ -225,7 +225,7 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	Queue q = newQueue();
 	QueueJoin(q, src);
 	int isFound = 0;
-	
+
 	while (isFound == 0 && !QueueIsEmpty(q)) {
 		// dequeue curr vertex from queue
 		PlaceId v = QueueLeave(q);
@@ -276,7 +276,6 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
     free(visited);
     free(trace_back);
 	dropQueue(q);
-	return path;
 	*/
 	return path;
 }

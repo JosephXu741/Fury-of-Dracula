@@ -21,7 +21,7 @@
 #include "Places.h"
 #include "Game.h"
 
-#include "QueueOriginal.h"
+#include "Queue.h"
 //#include "Item.h"
 
 #define HUNTER 100
@@ -220,15 +220,16 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	Player player, Round round, int *pathLength)
 {
 	PlaceId *path = calloc(MapNumPlaces(m), sizeof(PlaceId));
-	/*
+	
 	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
-	Queue q = newQueue();
-	QueueJoin(q, src);
+	QueueOrg q = newQueueOrg();
+	QueueOrgJoin(q, src);
 	int isFound = 0;
 
-	while (isFound == 0 && !QueueIsEmpty(q)) {
+	//printf("IN HERE\n");
+	while (isFound == 0 && !QueueOrgIsEmpty(q)) {
 		// dequeue curr vertex from queue
-		PlaceId v = QueueLeave(q);
+		PlaceId v = QueueOrgLeave(q);
 		if(v == dest) {
 			isFound = 1;
 			break;
@@ -246,9 +247,10 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 		for (int w = 0; w < numReturnedLocs; w++) {
 			if (!visited[w]) {
 				visited[w] = v;
-				QueueJoin(q, reachP[w]);
+				QueueOrgJoin(q, reachP[w]);
 			}
 		}
+		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 
 
@@ -275,8 +277,8 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	pathLength = &new_nV;
     free(visited);
     free(trace_back);
-	dropQueue(q);
-	*/
+	dropQueueOrg(q);
+	
 	return path;
 }
 

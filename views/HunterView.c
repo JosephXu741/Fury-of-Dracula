@@ -21,7 +21,7 @@
 #include "HunterView.h"
 #include "Map.h"
 #include "Places.h"
-#include "QueueOriginal.h"
+#include "Queue.h"
 
 #define PREMATURE_VAMPIRE 0
 #define REGULAR_TRAP	  1
@@ -110,16 +110,19 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 {
 	bool freec = false;
 	int Returned = 0;
-	Round curr_round = GvGetRound(hv->gv);
+	PlaceId currLoc = NOWHERE;
 	PlaceId *gethistory = GvGetMoveHistory(hv->gv,PLAYER_DRACULA,&Returned,&freec);
-	for(int i = Returned; i >= 0; i--){
-		if(gethistory[i] != CITY_UNKNOWN && gethistory[i] != SEA_UNKNOWN){
-			return gethistory[i];
+	for(int i = 0; i < Returned; i++){
+		if(gethistory[i] != CITY_UNKNOWN && gethistory[i] != SEA_UNKNOWN && gethistory[i] != CASTLE_DRACULA){
+			currLoc = gethistory[i];
+			*round  = i;
+			break;
 		}
-		curr_round--;
 	}
-	*(round) = curr_round;
-	return NOWHERE;
+    if(freec == true){
+        free(gethistory);
+    }
+	return currLoc;
 }
 
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,

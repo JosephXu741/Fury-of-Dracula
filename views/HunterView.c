@@ -128,7 +128,16 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	return 0;
+	PlaceId *result = MapGetShortestPath(hv->gv->map, 
+		GvGetPlayerLocation(hv->gv, GvGetPlayer(hv->gv)), dest, 
+		GvGetPlayer(hv->gv), GvGetRound(hv->gv), pathLength);
+	PlaceId *path = calloc(*pathLength, sizeof(PlaceId));
+	
+	for (int i = 0; i < *pathLength; i++) {
+		path[i] = result[i + 1];
+	}
+
+	return path;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -157,8 +166,6 @@ PlaceId *HvWhereCanTheyGo(HunterView hv, Player player,
                           int *numReturnedLocs)
 {
 
-	// TODO If Dracula's current location is not revealed, the
- 	// * function should set *numReturnedLocs to 0 and return NULL.
 	*numReturnedLocs = 0;
 	return GvGetReachable(hv->gv, player, GvGetRound(hv->gv),
             	GvGetPlayerLocation(hv->gv, player), numReturnedLocs);
@@ -169,8 +176,7 @@ PlaceId *HvWhereCanTheyGoByType(HunterView hv, Player player,
                                 bool road, bool rail, bool boat,
                                 int *numReturnedLocs)
 {
-	// TODO If Dracula's current location is not revealed, the
- 	// * function should set *numReturnedLocs to 0 and return NULL.
+
 	*numReturnedLocs = 0;
 	return GvGetReachableByType(hv->gv, player, GvGetRound(hv->gv),
             	GvGetPlayerLocation(hv->gv, player), 

@@ -22,6 +22,8 @@
 #include "GameView.h"
 #include "Places.h"
 #include "testUtils.h"
+#include "Map.h"
+#include "Queue.h"
 
 int main(void)
 {

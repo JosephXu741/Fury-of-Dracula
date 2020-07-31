@@ -128,11 +128,12 @@ PlaceId HvGetLastKnownDraculaLocation(HunterView hv, Round *round)
 PlaceId *HvGetShortestPathTo(HunterView hv, Player hunter, PlaceId dest,
                              int *pathLength)
 {
-	PlaceId *result = MapGetShortestPath(hv->gv->map, 
+	PlaceId *result = GvGetMapShortestPath(hv->gv, 
 		GvGetPlayerLocation(hv->gv, GvGetPlayer(hv->gv)), dest, 
 		GvGetPlayer(hv->gv), GvGetRound(hv->gv), pathLength);
+
 	PlaceId *path = calloc(*pathLength, sizeof(PlaceId));
-	
+
 	for (int i = 0; i < *pathLength; i++) {
 		path[i] = result[i + 1];
 	}

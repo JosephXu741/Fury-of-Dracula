@@ -524,3 +524,11 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
+
+PlaceId *GvGetMapShortestPath(GameView gv, PlaceId src, PlaceId dest, 
+		Player player, Round round, int *pathLength)
+{
+	return MapGetShortestPath(gv->map, src, dest, 
+		player, round, pathLength);
+
+}

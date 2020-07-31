@@ -256,4 +256,10 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 
 
 
+PlaceId *GvGetMapShortestPath(GameView gv, PlaceId src, PlaceId dest, 
+		Player player, Round round, int *pathLength);
+
+
+
+
 #endif // !defined (FOD__GAME_VIEW_H_)

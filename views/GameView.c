@@ -186,12 +186,12 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 			for (int i = 0; i < 4; i++){
 				if (event[i] == 'T') {
-					TrapRemove(new->trail, player.place, NORMAL_TRAP);
+					TrapRemove(new->trail, player.place);
 					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;					
 				} 
 				
 				if (event[i] == 'V') {
-					TrapRemove(new->trail, player.place, IMMATURE_VAMPIRE);
+					TrapRemove(new->trail, player.place);
 				} 
 				if (event[i] == 'D') {
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;

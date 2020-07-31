@@ -130,10 +130,14 @@ GameView GvNew(char *pastPlays, Message messages[])
 				new->Dracula.place = place;
 				TrailJoin(new->trail, new->Dracula.place);
 				if (place == SEA_UNKNOWN || pType == SEA) new->Dracula.health -= LIFE_LOSS_SEA;
-			} 
+			} else if (place == HIDE) {
+				TrailJoin(new->trail, new->Dracula.place);
+				if (place == SEA_UNKNOWN || pType == SEA) new->Dracula.health -= LIFE_LOSS_SEA;
+			}
+
 			if (place == CASTLE_DRACULA) { 
 				new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
-			}
+			} 
 			if (dEncounter[0] == 'T') {
 				addTrapToTrail(new->trail, new->Dracula.place, NORMAL_TRAP);
 			}
@@ -182,12 +186,12 @@ GameView GvNew(char *pastPlays, Message messages[])
 
 			for (int i = 0; i < 4; i++){
 				if (event[i] == 'T') {
-					TrapRemove(new->trail, player.place);
+					TrapRemove(new->trail, player.place, NORMAL_TRAP);
 					player.health -= LIFE_LOSS_TRAP_ENCOUNTER;					
 				} 
 				
 				if (event[i] == 'V') {
-					TrapRemove(new->trail, player.place);
+					TrapRemove(new->trail, player.place, IMMATURE_VAMPIRE);
 				} 
 				if (event[i] == 'D') {
 					new->Dracula.health -= LIFE_LOSS_HUNTER_ENCOUNTER;

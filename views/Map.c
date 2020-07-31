@@ -242,14 +242,11 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 			break;
 		}
 
-<<<<<<< HEAD
 		if (round_counter == 0) {
 			round_counter += round_incrementor;
 			round_incrementor = 0;
 			round_no++;
 		}
-=======
->>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 
 		// Find out the reachable places for curr player in curr round
 		// REMEMBER TO increment round after this
@@ -259,11 +256,7 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 		}
 		int numReturnedLocs = 0;
 		PlaceId *reachP = MapGetHunterReachable (m, v, HUNTER, 
-<<<<<<< HEAD
 			player, round_no, &numReturnedLocs, true, true, true);
-=======
-			player, round, &numReturnedLocs, true, true, true);
->>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 
 
 		// go through all reachable places (connect to src)
@@ -275,14 +268,10 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 				printf("queue join:%d\n", reachP[w]);
 			}
 		}
-<<<<<<< HEAD
 		round_incrementor += w;
 
 
 		round_counter--;
-=======
-		QueueOrgJoin(q, breakQueue);
->>>>>>> 84b76fb694b22fbac4688ce2292eb7430a4afa5b
 		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 

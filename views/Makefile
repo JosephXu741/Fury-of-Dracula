@@ -25,15 +25,15 @@ testDraculaView: testDraculaView.o testUtils.o DraculaView.o GameView.o Map.o Pl
 testDraculaView.o: testDraculaView.c DraculaView.h GameView.h Map.h Places.h Game.h Queue.h 
 
 testMap: testMap.o Map.o Places.o QueueOriginal.o testUtils.o
-testMap.o: testMap.c Map.h Places.h QueueOriginal.h Item.h testUtils.c testUtils.h
+testMap.o: testMap.c Map.h Places.h QueueOriginal.h testUtils.c testUtils.h
 
 Queue.o: Queue.c Queue.h Trap.h
-QueueOriginal.o: QueueOriginal.c QueueOriginal.h Item.h
+QueueOriginal.o: QueueOriginal.c QueueOriginal.h
 
-Places.o: Places.c Places.h Game.h QueueOriginal.h Item.h
-Map.o: Map.c Map.h Places.h Game.h QueueOriginal.h Item.h
+Places.o: Places.c Places.h Game.h QueueOriginal.h
+Map.o: Map.c Map.h Places.h Game.h QueueOriginal.h
 GameView.o:	GameView.c GameView.h Game.h Queue.h
-HunterView.o: HunterView.c HunterView.h Game.h QueueOriginal.h Item.h Map.h
+HunterView.o: HunterView.c HunterView.h Game.h QueueOriginal.h Map.h
 DraculaView.o: DraculaView.c DraculaView.h Game.h Queue.h
 testUtils.o: testUtils.c Places.h Game.h  
 .PHONY: clean

@@ -22,7 +22,7 @@
 #include "Places.h"
 #include "Map.h"
 // add your own #includes here
-#include "Item.h"
+//#include "Item.h"
 #include "QueueOriginal.h"
 
 typedef struct hunterView *HunterView;

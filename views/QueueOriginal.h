@@ -4,7 +4,6 @@
 //#ifndef QUEUE_ORIGINAL_H
 #define QUEUE_ORIGINAL_H
 
-#include "Item.h"
 
 typedef struct QueueRep *Queue;
 typedef int Item;

@@ -102,7 +102,10 @@ void addTrapToTrail(Queue Q, PlaceId location, TrapId traptype) {
 	QueueNode *curr = Q->head;
 	while (curr != NULL) {
 		if (curr->location == location) {
-			if (traptype == NORMAL_TRAP && curr->trapNums++);
+			if (traptype == NORMAL_TRAP) {
+				curr->trapNums++;
+				UpdateTrapSameLocation(Q, location);
+			}
 			if (traptype == IMMATURE_VAMPIRE) curr->vampire = true;
 			break;
 		}
@@ -148,6 +151,7 @@ TrapId TrapRemove(Queue Q, PlaceId location)
 				
 				Q->trapNum -= curr->trapNums;
 				curr->trapNums--;
+				UpdateTrapSameLocation(Q, location);
 				return NORMAL_TRAP;
 			}
 			if (curr->vampire == true) {
@@ -185,4 +189,22 @@ int TrailLength(Queue Q){
 }
 int TotalTrapsTrail(Queue Q){
 	return Q->trapNum;
+}
+// checks for the max num of traps in location if there are multiple same locations in trail
+void UpdateTrapSameLocation(Queue Q, PlaceId location) { 
+	int firstoccurencetraps = 0;
+	bool first = false;
+	QueueNode *curr = Q->head;
+	while (curr != NULL) {
+		if (curr->location == location) {
+			if (first == false) {
+				first = true;
+				firstoccurencetraps = curr->trapNums;
+			}
+			curr->trapNums = firstoccurencetraps;
+		}
+
+		curr = curr->next;
+	}
+
 }

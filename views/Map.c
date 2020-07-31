@@ -222,6 +222,7 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	PlaceId *path = calloc(MapNumPlaces(m), sizeof(PlaceId));
 	
 	PlaceId *visited = calloc(MapNumPlaces(m), sizeof(PlaceId));
+	visited[src] = src;
 	QueueOrg q = newQueueOrg();
 	QueueOrgJoin(q, src);
 	int isFound = 0;
@@ -230,6 +231,7 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 	while (isFound == 0 && !QueueOrgIsEmpty(q)) {
 		// dequeue curr vertex from queue
 		PlaceId v = QueueOrgLeave(q);
+		printf("v is:%d\n", v);
 		if(v == dest) {
 			isFound = 1;
 			break;
@@ -238,22 +240,23 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
 		// Find out the reachable places for curr player in curr round
 		// REMEMBER TO increment round after this
 		int numReturnedLocs = 0;
-		PlaceId *reachP = MapGetHunterReachable (m, src, HUNTER, 
+		PlaceId *reachP = MapGetHunterReachable (m, v, HUNTER, 
 			player, round, &numReturnedLocs, true, true, true);
 		round += 1;
 
 
 		// go through all reachable places (connect to src)
-		for (int w = 0; w < numReturnedLocs; w++) {
-			if (!visited[w]) {
-				visited[w] = v;
+		for (int w = 1; w < numReturnedLocs; w++) {
+			if (visited[reachP[w]] == 0) {
+				visited[reachP[w]] = v;
 				QueueOrgJoin(q, reachP[w]);
+				printf("queue join:%d\n", reachP[w]);
 			}
 		}
 		printf("numReturnedLocs is:%d\n", numReturnedLocs);
     }
 
-
+/*
 	// trace back visited[] array, from dist to src
     PlaceId *trace_back = calloc(MapNumPlaces(m), sizeof(PlaceId));
 	// number of vertices stored in the path array
@@ -273,11 +276,29 @@ PlaceId *MapGetShortestPath(Map m, PlaceId src, PlaceId dest,
     for(int i = 0; i < new_nV; i++) {
        path[new_nV - (i + 1)] = trace_back[i];
     }
-
-	pathLength = &new_nV;
+	
+	printf("new:%d\n", new_nV);
+	*pathLength = new_nV;
     free(visited);
     free(trace_back);
 	dropQueueOrg(q);
+	*/
+	
+	int number = 0;
+	if (isFound == 1) {
+		for (PlaceId v = dest; v != src; v = visited[v]) {
+			number++;
+		}
+		int j = number;
+		path[0] = src;
+		for (PlaceId v = dest; v != src; v = visited[v]) {
+			path[j] = v;
+			j--;
+		}
+		number++;
+	}
+	
+	*pathLength = number;
 	
 	return path;
 }

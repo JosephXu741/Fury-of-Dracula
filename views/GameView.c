@@ -124,6 +124,7 @@ GameView GvNew(char *pastPlays, Message messages[])
 					new->Dracula.health += LIFE_GAIN_CASTLE_DRACULA;
 				}
 				new->Dracula.place = location;
+				TrailJoin(new->trail, new->Dracula.place);
 				if (location == SEA_UNKNOWN || pType1 == SEA) new->Dracula.health -= LIFE_LOSS_SEA;	
 
 			} else if (place != HIDE) {											// is a place

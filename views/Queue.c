@@ -69,7 +69,7 @@ PlaceId *getTrapsLocations(Queue Q)
 	int i = 0;
 	
 	while (curr != NULL) {
-		if (curr->trapNums > 0){
+		if (curr->vampire == false && curr->trapNums > 0){
 			arr[i] = curr->location;
 			i++;
 		}

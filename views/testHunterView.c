@@ -338,7 +338,7 @@ int main(void)
 			PlaceId *path = HvGetShortestPathTo(hv, PLAYER_MINA_HARKER,
 			                                    CONSTANTA, &pathLength);
 			assert(pathLength == 4);
-			assert(assert(path[0] == GENOA || path[0] == MILAN);
+			assert(path[0] == GENOA || path[0] == MILAN);
 			assert(path[1] == VENICE);
 			assert(path[2] == BUDAPEST);
 			assert(path[3] == CONSTANTA);

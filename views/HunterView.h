@@ -20,9 +20,8 @@
 
 #include "Game.h"
 #include "Places.h"
-#include "Map.h"
 // add your own #includes here
-#include "Item.h"
+#include "Map.h"
 #include "QueueOriginal.h"
 
 typedef struct hunterView *HunterView;

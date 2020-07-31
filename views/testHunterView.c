@@ -22,6 +22,7 @@
 #include "HunterView.h"
 #include "Places.h"
 #include "testUtils.h"
+#include "QueueOriginal.h"
 
 int main(void)
 {
@@ -461,5 +462,106 @@ int main(void)
 		printf("Test passed!\n");	
 	}
 	
+
+	///////////////////////////////////////////////////////////////
+	// add test for reachable
+
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Reachable from TOULOUSE, all type "
+		       "(PLAYER_MINA_HARKER, Round 1)\n");
+		
+		char *trail = "GSZ.... SGE.... HGE.... MTO.... DSZ.V..";
+		Message messages[1] = {};
+		HunterView hv = HvNew(trail, messages);
+		
+		int numLocs = -1;
+		PlaceId *locs = HvWhereCanTheyGoByType(hv, PLAYER_MINA_HARKER,
+		                                       true, true, true, &numLocs);
+		
+		assert(numLocs == 6);
+		sortPlaces(locs, numLocs);
+		assert(locs[0] == BARCELONA);
+		assert(locs[1] == BORDEAUX);
+		assert(locs[2] == CLERMONT_FERRAND);
+		assert(locs[3] == MARSEILLES);
+		assert(locs[4] == SARAGOSSA);
+		assert(locs[5] == TOULOUSE);
+		free(locs);
+		
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
+
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Reachable from TOULOUSE, all type "
+		       "(PLAYER_MINA_HARKER, Round 1)\n");
+		
+		char *trail = "GSZ.... SGE.... HGE.... MTO.... DSZ.V..";
+		Message messages[1] = {};
+		HunterView hv = HvNew(trail, messages);
+		
+		int numLocs = -1;
+		PlaceId *locs = HvWhereCanIGo(hv, &numLocs);
+		
+		assert(numLocs == 6);
+		sortPlaces(locs, numLocs);
+		assert(locs[0] == BARCELONA);
+		assert(locs[1] == BORDEAUX);
+		assert(locs[2] == CLERMONT_FERRAND);
+		assert(locs[3] == MARSEILLES);
+		assert(locs[4] == SARAGOSSA);
+		assert(locs[5] == TOULOUSE);
+		free(locs);
+		
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
+
+	{///////////////////////////////////////////////////////////////////
+	
+		printf("Reachable from BORDEAUX, rail only "
+		       "(PLAYER_VAN_HELSING, Round 2, maxDist 2)\n");
+		
+		char *trail =
+			"GBO.... SGE.... HNP.... MGE.... DCD.V.. "
+			"GBO.... SGE.... HNP.... MGE.... DD1T...";
+		Message messages[10] = {};
+		HunterView hv = HvNew(trail, messages);
+		
+		int numLocs = -1;
+		PlaceId *locs = HvWhereCanIGoByType(hv, false, true, false, &numLocs);
+
+		assert(numLocs == 1);
+		sortPlaces(locs, numLocs);
+		assert(locs[0] == NAPLES);
+		free(locs);
+		
+		HvFree(hv);
+		printf("Test passed!\n");
+	}
+
+
+	///////////////////////////////////////////////////////////////
+	// end for test for reachable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	return EXIT_SUCCESS;
 }

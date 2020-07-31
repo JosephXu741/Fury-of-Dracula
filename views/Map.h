@@ -16,7 +16,7 @@
 #include "Places.h"
 #include "Game.h"
 #include "QueueOriginal.h"
-#include "Item.h"
+//#include "Item.h"
 
 #ifndef FOD__MAP_H_
 #define FOD__MAP_H_

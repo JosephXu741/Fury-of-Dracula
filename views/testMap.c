@@ -174,7 +174,7 @@ int main(void)
 	}
 
 
-		{///////////////////////////////////////////////////////////////////
+	{///////////////////////////////////////////////////////////////////
 	
 		printf("Testing MapGetHunterReachable. Port city, rail maxDist is 3\n");
 
@@ -350,7 +350,7 @@ int main(void)
 		PlaceId *locs = MapGetShortestPath(m, CADIZ, BARCELONA, 0, 1, &pathLength);
 
 		assert(pathLength == 2);
-		sortPlaces(locs, numLocs);
+		sortPlaces(locs, pathLength);
 		//assert(locs[0] == SZEGED);
 
 		free(locs);

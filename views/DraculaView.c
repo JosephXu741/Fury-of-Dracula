@@ -18,7 +18,6 @@
 #include "DraculaView.h"
 #include "Game.h"
 #include "GameView.h"
-#include "Map.h"
 #include "Places.h"
 
 // add your own #includes here
@@ -28,7 +27,6 @@
 struct draculaView {
 	char *pastPlays;
 	GameView gv;
-	Map map;
 } ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -43,7 +41,6 @@ DraculaView DvNew(char *pastPlays, Message messages[])
 	}
 	new->gv = GvNew(pastPlays, messages);
 	new->pastPlays = pastPlays;
-	new->map = MapNew();
 
 	return new;
 }

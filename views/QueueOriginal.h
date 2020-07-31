@@ -7,6 +7,12 @@
 #include "Item.h"
 
 typedef struct QueueRep *Queue;
+typedef int Item;
+
+#define ItemCopy(i) (i)
+#define ItemEQ(i1, i2) ((i1) == (i2))
+#define ItemShow(i) printf ("%d", (i))
+
 
 Queue newQueue (void);			// create new empty queue
 void dropQueue (Queue);			// free memory used by queue

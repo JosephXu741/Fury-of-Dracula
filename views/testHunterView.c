@@ -286,7 +286,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-
+/*
 	{///////////////////////////////////////////////////////////////////
 		
 		printf("Testing shortest path 1\n");
@@ -364,7 +364,7 @@ int main(void)
 		HvFree(hv);
 		printf("Test passed!\n");
 	}
-	
+*/
 	{///////////////////////////////////////////////////////////////////
 	
 		printf("Checking Galatz road connections "

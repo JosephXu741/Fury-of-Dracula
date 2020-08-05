@@ -12,9 +12,11 @@
 #include "Game.h"
 #include "hunter.h"
 #include "HunterView.h"
+#include "Places.h"
 
 void decideHunterMove(HunterView hv)
 {
 	// TODO: Replace this with something better!
+
 	registerBestPlay("TO", "Have we nothing Toulouse?");
 }

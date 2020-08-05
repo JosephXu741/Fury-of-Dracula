@@ -16,7 +16,20 @@
 
 void decideHunterMove(HunterView hv)
 {
-	// TODO: Replace this with something better!
+	int pathLength = 0;
+	char* abbv;
+	Round round = 0;
+	
+	if (HvGetLastKnownDraculaLocation(hv, &round) != NOWHERE) {
+		PlaceId *path = HvGetShortestPathTo(hv,HvGetPlayer(hv), 
+		HvGetLastKnownDraculaLocation(hv, &round), &pathLength);
+		abbv = placeIdToAbbrev(path[0]);	
+	} 
+	else {
+		PlaceId *path = HvGetShortestPathTo(hv,HvGetPlayer(hv), 
+		CASTLE_DRACULA, &pathLength);
+		abbv = placeIdToAbbrev(path[0]);	
+	}
 
-	registerBestPlay("TO", "Have we nothing Toulouse?");
+	registerBestPlay(abbv, "lol");
 }

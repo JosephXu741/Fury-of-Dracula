@@ -347,7 +347,11 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
-// TODO
+PlaceId *DvGetPlayerHistory(DraculaView dv, Player player, int numLocs,
+                            int *numReturnedLocs, bool *canfree)
+{
+	return GvGetLastLocations(dv->gv, player, numLocs, numReturnedLocs, canfree);
+}
 
 PlaceId DvWhereAmI(DraculaView dv)
 {

@@ -16,6 +16,21 @@
 
 void decideHunterMove(HunterView hv)
 {
+	if(HvGetRound(hv) == 0){
+    		if (HvGetPlayer(hv) == PLAYER_LORD_GODALMING) registerBestPlay("MA", "start game");
+    		else if (HvGetPlayer(hv) == PLAYER_DR_SEWARD) registerBestPlay("PA", "start game");
+    		else if (HvGetPlayer(hv) == PLAYER_VAN_HELSING) registerBestPlay("BR", "start game");
+    		else if (HvGetPlayer(hv) == PLAYER_MINA_HARKER) registerBestPlay("SO", "start game");
+    		return;
+    	}
+
+    	Player currplayer = HvGetPlayer(hv);
+    	PlaceId currlocation = HvGetPlayerLocation(hv,currplayer);
+		if (HvGetHealth(hv,HvGetPlayer(hv)) <= 4) {
+			Place moveloction= HvGetPlayerLocation(hv,HvGetPlayer(hv));
+			registerBestPlay(placeIdToAbbrev(movelocation), "Hunter rest");
+			return;
+		} 
 	int pathLength = 0;
 	char* abbv;
 	Round round = 0;

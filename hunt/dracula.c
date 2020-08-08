@@ -8,7 +8,7 @@
 // 2020-07-10	v3.0	Team Dracula <cs2521@cse.unsw.edu.au>
 //
 ////////////////////////////////////////////////////////////////////////
-
+#include <stdio.h>
 #include "dracula.h"
 #include "DraculaView.h"
 #include "Game.h"
@@ -80,10 +80,11 @@ PlaceId *GetHunterReachable(DraculaView dv) {
 	PlaceId *hunterReachable = malloc(sizeof(int));
 
 	PlaceId *places;
-	int numReturnedLocs = 0;
+	int numReturnedLocs;
 	int size = 0;
 	// loop through all hunters and add their reachables into hunterReachable
 	for (int i = 0; i < 4; i++) {
+		numReturnedLocs = 0;
 		places = DvWhereCanTheyGo(dv, i, &numReturnedLocs);
 		// If hunterReachable is not 0
 		if (numReturnedLocs != 0) {
@@ -92,7 +93,7 @@ PlaceId *GetHunterReachable(DraculaView dv) {
 				// If the place is not already in hunterReachable
 				if (size == 0 || !isPlaceInPlaceArray(places[j], hunterReachable)) {
 					// increase hunterReachable array by one and add place.
-					hunterReachable = realloc(hunterReachable, size + 1);
+					hunterReachable = realloc(hunterReachable, (size + 1) * sizeof(int));
 					hunterReachable[size] = places[j];
 					size++;
 				}

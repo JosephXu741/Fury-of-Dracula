@@ -611,7 +611,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 {
 	bool locations[NUM_REAL_PLACES] = {};
 	locations[from] = true;
-	
 	if (road) {
 		addRoadConnections(gv->map, player, from, locations);
 	}
@@ -622,7 +621,6 @@ PlaceId *GvGetReachableByType(GameView gv, Player player, Round round,
 	if (boat) {
 		addBoatConnections(gv->map, player, from, locations);
 	}
-	
 	return boolsToPlaces(locations, numReturnedLocs);
 }
 

@@ -265,7 +265,6 @@ PlaceId *DvWhereCanIGoByType(DraculaView dv, bool road, bool boat,
 		*numReturnedLocs = 0;
 		return NULL;
 	}
-
 	// Get an array of locations connected to Dracula's location
 	// by the given transport methods
 	int numReachable = 0;

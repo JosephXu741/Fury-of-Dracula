@@ -29,6 +29,11 @@ void decideHunterMove(HunterView hv)
     		return;
 	}
 
+	int movelocation= HvGetPlayerLocation(hv,HvGetPlayer(hv));
+	registerBestPlay(placeIdToAbbrev(movelocation), "rest");
+	return;
+
+	/*
 	// rest if hp <= 4
 	if (HvGetHealth(hv,HvGetPlayer(hv)) <= 4) {
 		int movelocation= HvGetPlayerLocation(hv,HvGetPlayer(hv));
@@ -77,6 +82,7 @@ void decideHunterMove(HunterView hv)
 	}
 
 	registerBestPlay(abbv, "lol");
+	*/
 }
 
 

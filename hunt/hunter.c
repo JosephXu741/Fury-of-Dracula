@@ -21,6 +21,9 @@ PlaceId *getGoodPlays(PlaceId *currPr, PlaceId *pr1, PlaceId *pr2, PlaceId *pr3)
 
 void decideHunterMove(HunterView hv)
 {
+	PlaceId move = NOWHERE;
+	int numReturnedLocs = 0;
+	PlaceId *reachable = HvWhereCanIGo(hv, &numReturnedLocs);
 	if (HvGetRound(hv) == 0) {
     		if (HvGetPlayer(hv) == PLAYER_LORD_GODALMING) registerBestPlay("MA", "start game");
     		else if (HvGetPlayer(hv) == PLAYER_DR_SEWARD) registerBestPlay("PA", "start game");
@@ -28,12 +31,30 @@ void decideHunterMove(HunterView hv)
     		else if (HvGetPlayer(hv) == PLAYER_MINA_HARKER) registerBestPlay("SO", "start game");
     		return;
 	}
+	if (numReturnedLocs == 0){
+		registerBestPlay("TP", "lol");
+		return;
+	}
 
+	if (HvGetHealth(hv,HvGetPlayer(hv)) <= 4) {
+		int movelocation= HvGetPlayerLocation(hv,HvGetPlayer(hv));
+		registerBestPlay(placeIdToAbbrev(movelocation), "rest");
+		return;
+	}
+
+	if(HvGetHealth(hv,HvGetPlayer(hv)) > 3 && numReturnedLocs != 0){
+		move = reachable[0];	
+	}
+
+	registerBestPlay(placeIdToAbbrev(move), "random move");
+}
+	
+	/*
 	int movelocation= HvGetPlayerLocation(hv,HvGetPlayer(hv));
 	registerBestPlay(placeIdToAbbrev(movelocation), "rest");
 	return;
 
-	/*
+	
 	// rest if hp <= 4
 	if (HvGetHealth(hv,HvGetPlayer(hv)) <= 4) {
 		int movelocation= HvGetPlayerLocation(hv,HvGetPlayer(hv));
@@ -82,7 +103,7 @@ void decideHunterMove(HunterView hv)
 	}
 
 	registerBestPlay(abbv, "lol");
-	*/
+	
 }
 
 
@@ -119,3 +140,4 @@ PlaceId *getGoodPlays (PlaceId *currPr, PlaceId *pr1, PlaceId *pr2, PlaceId *pr3
 	}
 	return goodPlays;
 }
+*/

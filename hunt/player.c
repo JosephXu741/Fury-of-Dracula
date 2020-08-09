@@ -61,7 +61,7 @@ typedef DraculaView View;
 # define decideMove decideDraculaMove
 # define ViewFree DvFree
 
-# define xPastPlays "GSW.... SLS.... HMR.... MHA.... DSJ.V.. GLO.... SAL.... HCO.... MBR.... DBET... GED.... SBO.... HLI.... MPR.... DKLT... GLV.... SNA.... HNU.... MBD.... DCDT... GIR.... SPA.... HPR.... MKLT... DHIT... GAO.... SST.... HSZ.... MCDTTD. DGAT... GMS.... SFL.... HKL.... MSZ.... DCNT.V. GTS.... SRO.... HBC.... MCNTD.. DBS..M. GIO.... SBI.... HCN.... MCN.... DIO.... GIO.... SAS.... HBS.... MCN.... DTS.... GTS.... SAS.... HIO.... MBS.... DMS.... GMS.... SIO.... HTS.... MIO.... DAO..M. GAO.... STS.... HMS.... MTS.... DNS.... GBB.... SMS.... HAO.... MMS.... DED.V.. GNA.... SAO.... HEC.... MAO.... DMNT... GBO.... SIR.... HLE.... MEC...."
+# define xPastPlays "GGA.... SRO.... HBA.... MBU.... DAL.V.. GBC.... SBI.... HALVD.. MPA.... DGRT... GBE.... SNP.... HMA.... MBO.... DCAT... GSA.... STS.... HAL.... MBA.... DAO.... GIO.... SMS.... HGRT... MAL.... DBB.... GTS.... SAL.... HGR.... MGR.... DBOT... GCG.... SAL.... HGR.... MMA.... DCFT... GCG.... SAL.... HGR.... MAL.... DGET... GCG.... SAL.... HAL.... MAL.... DMRT.M. GCG.... SAL.... HAL.... MAL.... DGOT... GCG.... SAL.... HAL.... MAL.... DFLT... GCG.... SAL.... HAL.... MAL.... DROT.M. GCG.... SAL.... HAL.... MAL.... DBIT.M. GCG.... SAL.... HAL.... MAL.... DD1.VM. GCG.... SAL.... HAL.... MAL...."
 # define xMsgs { "", "", "", "" }
 
 #else
@@ -72,7 +72,7 @@ typedef HunterView View;
 # define decideMove decideHunterMove
 # define ViewFree HvFree
 
-# define xPastPlays "GZA.... SED.... HZU...."
+# define xPastPlays "GMA.... SPA.... HBR.... MSO.... DIO.... GMA.... SGE.... HBR.... MSO.... DAS.... GMA.... SGE.... HBR.... MSO.... DBIT... GMA.... SGE.... HBR.... MSO.... DD2.... GMA.... SGE.... HBR.... MSO.... DVET... GMA.... SGE.... HBR.... MSO.... DMIT... GMA.... SGE.... HBR.... MSO.... DGOT... GMA.... SGE.... HBR.... MSO.... DHIT... GMA.... SGE.... HBR.... MSO.... DMRT.M. GMA.... SGE.... HBR.... MSO.... DCFT... GMA.... SGE.... HBR...."
 # define xMsgs { "", "", "" }
 
 #endif

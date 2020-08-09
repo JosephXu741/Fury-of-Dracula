@@ -178,7 +178,7 @@ PlaceId *DvWhereCanTheyGoByType(DraculaView dv, Player player,
 ////////////////////////////////////////////////////////////////////////
 // Your own interface functions
 
-PlaceId *DvGetPlayerHistory(DraculaView dv, Player player, int numLocs,
+PlaceId *DvGetPlayerHistory(DraculaView dv, Player player,
                             int *numReturnedLocs, bool *canfree);
 
 

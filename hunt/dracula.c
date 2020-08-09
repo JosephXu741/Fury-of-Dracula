@@ -14,10 +14,10 @@
 #include "Game.h"
 #include "Places.h"
 
-void firstMove(DraculaView dv, PlaceId *hunterReachable);
+void firstMove(DraculaView dv, PlaceId *hunterReachable, int num);
 PlaceId *GetHunterReachable(DraculaView dv);
-bool isPlaceInPlaceArray(PlaceId place, PlaceId *placeArray);
-PlaceId translatePlaceToMove(DraculaView dv, PlaceId place, PlaceId *moveArray);
+bool isPlaceInPlaceArray(PlaceId place, PlaceId *placeArray, int num);
+PlaceId translatePlaceToMove(DraculaView dv, PlaceId place, PlaceId *moveArray, int num);
 
 
 void decideDraculaMove(DraculaView dv)
@@ -25,11 +25,29 @@ void decideDraculaMove(DraculaView dv)
 	PlaceId *hunterReachable = GetHunterReachable(dv);
 	int numReturnedLocs = 0;
 	PlaceId *reachable = DvWhereCanIGo(dv, &numReturnedLocs);
-	//int health = DvGetHealth(dv, PLAYER_DRACULA);
+	int numReturned = 0;
+	bool fal = false;
+	// GvGetLastLocations is giving me DOUBLE_BACK and HIDE moves even though it shouldnt
+	// This is the View code provided by cse...
+	PlaceId *pastLocations = DvGetPlayerHistory(dv, PLAYER_DRACULA, &numReturned, &fal);
+	if (numReturned > 5) {
+		// Bootleg GvGetLastLocations
+		for (int i = 0; i < 5; i++) {
+			pastLocations[i] = pastLocations[numReturned - 5 + i];
+		}
+		numReturned = 5;
+	}
 
+	for (int i = 0; i < numReturnedLocs; i++) {
+		printf("%d\n", reachable[i]);
+	}
+
+	for (int i = 0; i < numReturned; i++) {
+		printf("past locations: %d\n", pastLocations[i]);
+	}
 
 	if (DvGetRound(dv) == 0) {
-		firstMove(dv, hunterReachable);
+		firstMove(dv, hunterReachable, numReturnedLocs);
 		return;
 	}
 
@@ -40,9 +58,12 @@ void decideDraculaMove(DraculaView dv)
 
 	int numReturnedMoves = 0;
 	PlaceId *validMoves = DvGetValidMoves(dv, &numReturnedMoves);
-	for (int i = 0; reachable[i]; i++){
-		if (!isPlaceInPlaceArray(reachable[i], hunterReachable)) {
-			int move = translatePlaceToMove(dv, reachable[i], validMoves);
+	for (int i = 0; i < numReturnedMoves; i++) {
+		printf("valid moves: %d\n", validMoves[i]);
+	}
+	for (int i = 0; i < numReturnedMoves; i++){
+		if (!isPlaceInPlaceArray(reachable[i], hunterReachable, numReturnedLocs) && !isPlaceInPlaceArray(reachable[i], pastLocations, numReturned)) {
+			int move = translatePlaceToMove(dv, reachable[i], validMoves, numReturnedMoves);
 			registerBestPlay(placeIdToAbbrev(move), "lol");
 			return;
 		}
@@ -55,16 +76,16 @@ void decideDraculaMove(DraculaView dv)
 
 
 // How to determine where Dracula Starts
-void firstMove(DraculaView dv, PlaceId *hunterReachable) {
+void firstMove(DraculaView dv, PlaceId *hunterReachable, int num) {
 
-	if (isPlaceInPlaceArray(CASTLE_DRACULA, hunterReachable)) {
+	if (isPlaceInPlaceArray(CASTLE_DRACULA, hunterReachable, num)) {
 		registerBestPlay("CD", "lol");
 		return;
 	}
 
 	for (int i = 0; i < NUM_REAL_PLACES; i++) {
 		if (i == ST_JOSEPH_AND_ST_MARY || placeIsSea(i) || 
-			isPlaceInPlaceArray(i, hunterReachable)) {
+			isPlaceInPlaceArray(i, hunterReachable, num)) {
 			continue;
 		}
 		else {
@@ -89,9 +110,9 @@ PlaceId *GetHunterReachable(DraculaView dv) {
 		// If hunterReachable is not 0
 		if (numReturnedLocs != 0) {
 			// For every place in a particular hunter's reachable
-			for (int j = 0; places[j]; j++) {
+			for (int j = 0; j < numReturnedLocs; j++) {
 				// If the place is not already in hunterReachable
-				if (size == 0 || !isPlaceInPlaceArray(places[j], hunterReachable)) {
+				if (size == 0 || !isPlaceInPlaceArray(places[j], hunterReachable, numReturnedLocs)) {
 					// increase hunterReachable array by one and add place.
 					hunterReachable = realloc(hunterReachable, (size + 1) * sizeof(int));
 					hunterReachable[size] = places[j];
@@ -105,9 +126,9 @@ PlaceId *GetHunterReachable(DraculaView dv) {
 }
 
 // Given a place and an array, return True if the place is in the array
-bool isPlaceInPlaceArray(PlaceId place, PlaceId *placeArray) {
+bool isPlaceInPlaceArray(PlaceId place, PlaceId *placeArray, int num) {
 
-	for (int i = 0; placeArray[i]; i++) {
+	for (int i = 0; i < num; i++) {
 		if (place == placeArray[i]) {
 			return true;
 		}
@@ -117,26 +138,27 @@ bool isPlaceInPlaceArray(PlaceId place, PlaceId *placeArray) {
 }
 
 // Given a place, and move array, register an appropriate move
-PlaceId translatePlaceToMove(DraculaView dv, PlaceId place, PlaceId *moveArray) {
+PlaceId translatePlaceToMove(DraculaView dv, PlaceId place, PlaceId *moveArray, int num) {
 
-	for (int i = 0; moveArray[i]; i++) {
+	for (int i = 0; i < num; i++) {
 		if (place == moveArray[i]) {
 			return place;
 		}
 	}
+
 	if (DvGetPlayerLocation(dv, PLAYER_DRACULA) == place) {
-		if (isPlaceInPlaceArray(HIDE, moveArray)) {
+		if (isPlaceInPlaceArray(HIDE, moveArray, num)) {
 			return HIDE;
-		} else {
+		} else if (isPlaceInPlaceArray(DOUBLE_BACK_1, moveArray, num)) {
 			return DOUBLE_BACK_1;
 		}
 	}
 	int numReturnedLocs = 0;
 	bool f = false;
-	PlaceId *locationHistory = DvGetPlayerHistory(dv, PLAYER_DRACULA, 5, &numReturnedLocs, &f);
+	PlaceId *locationHistory = DvGetPlayerHistory(dv, PLAYER_DRACULA, &numReturnedLocs, &f);
 	
 	int i = 0;
-	while (locationHistory[i]) {
+	while (i < numReturnedLocs) {
 		if (locationHistory[i] == place) {
 			break;
 		}
